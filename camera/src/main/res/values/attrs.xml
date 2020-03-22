@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="camera_focus_view">
+        <attr name="prepare_color" format="color"/>
+        <attr name="finish_color" format="color"/>
+        <attr name="stroke_width" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="camera_view">
+        <!-- focus view attrs -->
+        <attr name="add_focus_view" format="boolean"/>
+        <attr name="focus_view_size" format="dimension"/>
+        <attr name="focus_start_color" format="color"/>
+        <attr name="focus_end_color" format="color"/>
+
+        <!--Camera View type-->
+        <attr name="camera_type" format="enum">
+            <enum name="surface" value="0"/>
+            <enum name="texture" value="1"/>
+        </attr>
+
+        <attr name="auto_focus" format="boolean"/>
+        <attr name="auto_flash" format="boolean"/>
+        <attr name="radio" format="enum">
+            <enum name="four2three" value="0"/>
+            <enum name="sixteen2nine" value="1"/>
+        </attr>
+
+        <attr name="face" format="enum">
+            <enum name="front" value="0"/>
+            <enum name="back" value="1"/>
+        </attr>
+
+
+        <attr name="adjust_view" format="boolean"/>
+
+    </declare-styleable>
+
+</resources>
