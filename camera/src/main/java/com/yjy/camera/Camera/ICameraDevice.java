@@ -2,8 +2,8 @@ package com.yjy.camera.Camera;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.support.annotation.NonNull;
 
-import androidx.annotation.NonNull;
 
 import com.yjy.opengl.util.Size;
 

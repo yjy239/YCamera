@@ -9,10 +9,10 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-import androidx.annotation.NonNull;
 
 import com.yjy.opengl.core.EGLCoreFactory;
 import com.yjy.opengl.core.Egl14Core;

@@ -1,15 +1,14 @@
 package com.yjy.camera.UI;
 
-
 import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,19 +23,19 @@ import java.util.ArrayList;
  * <pre>
  *     author : yjy
  *     e-mail : yujunyu12@gmail.com
- *     time   : 2020/03/20
+ *     time   : 2020/03/23
  *     desc   : 通过Fragment对YCamera资源进行释放
  *     version: 1.0
  * </pre>
  */
-public class CameraFragment extends Fragment implements ICameraFragment {
+public class CameraSupportFragment extends Fragment implements ICameraFragment {
 
     public static final int REQUEST_CODE = 11;
     private int mType = CameraType.Surface;
 
     private CameraPresenter mPresenter;
 
-    public CameraFragment(){
+    public CameraSupportFragment(){
         mPresenter = new CameraPresenter();
     }
 
@@ -134,7 +133,6 @@ public class CameraFragment extends Fragment implements ICameraFragment {
         mPresenter.onDestroy();
     }
 
-
     @Override
     public void closeCamera() {
         if(mPresenter == null){
@@ -142,7 +140,6 @@ public class CameraFragment extends Fragment implements ICameraFragment {
         }
         mPresenter.closeCamera();
     }
-
 
     @Override
     public void setFilterSync(boolean sync) {
@@ -176,7 +173,4 @@ public class CameraFragment extends Fragment implements ICameraFragment {
 
         mPresenter.setFilters(filters);
     }
-
-
-
 }

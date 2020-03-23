@@ -6,11 +6,11 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Render.WaterFilter;
@@ -18,18 +18,13 @@ import com.yjy.camera.Utils.CameraUtils;
 import com.yjy.camera.widget.RecordButton;
 import com.yjy.camera.widget.YCameraView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 
-import android.text.style.UpdateAppearance;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,18 +68,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-
-
                     isStart = false;
                 }else {
-                    if(Build.VERSION.SDK_INT >= 23){
-                        requestPermissions(new String[]{Manifest.permission.CAMERA},REQUEST_CODE);
-                    }else {
-                        cameraView.startPreview();
-                        img.setVisibility(View.GONE);
-                        mLayout.setVisibility(View.GONE);
-                        isStart = true;
-                    }
+                    openCamera();
+                    img.setVisibility(View.GONE);
+                    mLayout.setVisibility(View.GONE);
+                    isStart = true;
+
                 }
 
 
@@ -138,6 +128,49 @@ public class MainActivity extends AppCompatActivity {
                 CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40)));
 
 
+
+        cameraView.addFilter(new WaterFilter(this,getCustomViewBitmap(),
+                CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40),true));
+
+
+        cameraView.setFilterSync(false);
+    }
+
+
+    private Bitmap getCustomViewBitmap(){
+        TextView view = new TextView(this);
+        view.setText("edit by yjy");
+        view.setTextSize(16);
+        view.setTextColor(Color.BLACK);
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        return loadBitmapFromView(view);
+    }
+
+    public static Bitmap loadBitmapFromView(View v) {
+        if (v == null) {
+            return null;
+        }
+        Bitmap screenshot;
+        screenshot = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_4444);
+        Canvas canvas = new Canvas(screenshot);
+        canvas.translate(-v.getScrollX(), -v.getScrollY());
+        //我们在用滑动View获得它的Bitmap时候，获得的是整个View的区域（包括隐藏的），如果想得到当前区域，需要重新定位到当前可显示的区域
+        v.draw(canvas);// 将 view 画到画布上
+        return screenshot;
+    }
+
+    private void openCamera(){
+        if(Build.VERSION.SDK_INT >= 23){
+            requestPermissions(new String[]{Manifest.permission.CAMERA},REQUEST_CODE);
+        }else {
+            cameraView.startPreview();
+            img.setVisibility(View.GONE);
+            mLayout.setVisibility(View.GONE);
+            isStart = true;
+        }
     }
 
 
@@ -164,6 +197,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(!isStart){
+            openCamera();
+            isStart = true;
+        }
 
+
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(cameraView!=null){
+            cameraView.stopPreview();
+            isStart = false;
+        }
     }
 }

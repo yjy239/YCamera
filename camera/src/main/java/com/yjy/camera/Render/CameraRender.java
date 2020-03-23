@@ -4,9 +4,9 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.SurfaceBufferCallback;
@@ -73,6 +73,7 @@ public class CameraRender extends BaseRender {
 
     private Texture2DProgram mTextureProgram;
     private FrameDrawer mDrawer;
+    private boolean isSync = true;
 
 
     private boolean isInit = false;
@@ -81,6 +82,26 @@ public class CameraRender extends BaseRender {
     private ArrayList<IFBOFilter> mFilters = new ArrayList<>();
 
     private SurfaceTexture.OnFrameAvailableListener mFrameAvailableListener;
+
+    Runnable getShotRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(!isSync&&isRead&&mCallback != null){
+
+                isRead = false;
+                getSurfaceBuffer(new SurfaceBufferCallback() {
+                    @Override
+                    public void callback(Size size,ByteBuffer buffer) {
+                        if(mCallback!=null){
+                            mCallback.takeCurrentBuffer(size,buffer);
+                        }
+
+                    }
+                });
+
+            }
+        }
+    };
 
 
     public CameraRender() {
@@ -115,8 +136,20 @@ public class CameraRender extends BaseRender {
         if(mFilters == null||renders == null){
             return;
         }
+        if(mFilters.size() > 0){
+            mFilters.get(mFilters.size()-1).removeDrawEnd(getShotRunnable);
+        }
+
         mFilters.add(renders);
+
+
+        mFilters.get(mFilters.size()-1).addDrawEnd(getShotRunnable);
+
+
+
     }
+
+
 
     @Override
     public void removeFilter(IFBOFilter renders) {
@@ -144,6 +177,11 @@ public class CameraRender extends BaseRender {
     @Override
     public void onEGLContextCreated() {
 
+    }
+
+    @Override
+    public void setFilterSync(boolean sync) {
+        isSync = sync;
     }
 
     @Override
@@ -175,7 +213,6 @@ public class CameraRender extends BaseRender {
 
 
             mSurfaceTexture.setOnFrameAvailableListener(mFrameAvailableListener);
-
 
             //FBO的创建
             mOESFilter.onSurfaceCreated(mViewWidth,mViewHeight);
@@ -255,30 +292,27 @@ public class CameraRender extends BaseRender {
         //先绘制到fbo
         mOESFilter.setVertexAndTextureMatrix(mFinalMatrix,mOESTextureMatrix);
 
-        int textureId = mOESFilter.onDrawFrame(mTextureId);
+        int oesTextureId = mOESFilter.onDrawFrame(mTextureId);
+
+        int textureId = oesTextureId;
 
         //不断的绘制
         for(int i = 0; i< mFilters.size(); i++){
             textureId = mFilters.get(i).onDrawFrame(textureId);
         }
 
+
         //绘制到屏幕
-        drawTextureToScreen(textureId);
-
-        if(isRead&&mCallback != null){
-
-            isRead = false;
-            getSurfaceBuffer(new SurfaceBufferCallback() {
-                @Override
-                public void callback(Size size,ByteBuffer buffer) {
-                    if(mCallback!=null){
-                        mCallback.takeCurrentBuffer(size,buffer);
-                    }
-
-                }
-            });
-
+        if(isSync){
+            drawTextureToScreen(textureId);
+        }else {
+            drawTextureToScreen(oesTextureId);
         }
+
+        getShotRunnable.run();
+
+
+
 
 
 

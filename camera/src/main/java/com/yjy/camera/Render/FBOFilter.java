@@ -10,6 +10,8 @@ import com.yjy.opengl.gles.Texture2DProgram;
 import com.yjy.opengl.util.Utils;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -42,6 +44,8 @@ public class FBOFilter implements IFBOFilter {
 
     protected String mVertexShader;
     protected String mFragmentShader;
+
+    private List<Runnable> onEndRunnable = new ArrayList<>();
 
 
     public FBOFilter(Context context){
@@ -91,13 +95,6 @@ public class FBOFilter implements IFBOFilter {
     }
 
     @Override
-    public void reset() {
-        Context context = mContext;
-        release();
-        mContext = context;
-    }
-
-    @Override
     public void onSurfaceChanged(int width, int height) {
         mViewWidth = width;
         mViewHeight = height;
@@ -113,6 +110,12 @@ public class FBOFilter implements IFBOFilter {
         return Texture2DProgram.TEXTURE_2D;
     }
 
+    @Override
+    public void addDrawEnd(Runnable runnable) {
+        if(runnable != null){
+            onEndRunnable.add(runnable);
+        }
+    }
 
     protected void setUpFbo() {
         if(mFramebufferId>Utils.GL_NOT_INIT){
@@ -177,6 +180,16 @@ public class FBOFilter implements IFBOFilter {
 
     }
 
+    @Override
+    public void removeDrawEnd(Runnable runnable){
+        onEndRunnable.remove(runnable);
+    }
+
+    @Override
+    public void clearDrawEnd() {
+        onEndRunnable.clear();
+    }
+
     public void addDrawMore(Runnable runnable){
         if(mFBODrawer == null){
             return;
@@ -199,6 +212,13 @@ public class FBOFilter implements IFBOFilter {
                 mOESTextureMatrix);
 
         onDrawEnd();
+
+        for(Runnable run : onEndRunnable){
+            if(run!=null){
+                run.run();
+            }
+
+        }
         onUnBind();
 
         return fbTextureId;

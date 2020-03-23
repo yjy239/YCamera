@@ -7,12 +7,12 @@ package com.yjy.opengl.core;
 import android.graphics.SurfaceTexture;
 
 
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -110,9 +110,7 @@ public class LowEglCore implements IEGLCore {
         initializeInternal(surfaceTexture, eglContext == null ?  EGL10.EGL_NO_CONTEXT : eglContext);
     }
 
-    /**
-     * Copy from {@link android.opengl.GLSurfaceView#EglHelper}
-     */
+
     private void initializeInternal(Object nativeWindow, EGLContext sharedEglContext) {
 
         mEgl = (EGL10) EGLContext.getEGL();

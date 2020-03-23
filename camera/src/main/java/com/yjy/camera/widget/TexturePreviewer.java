@@ -6,10 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.view.View;
 
-
-import androidx.annotation.NonNull;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
@@ -165,4 +164,15 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
     public void setFilters(ArrayList<IFBOFilter> filters) {
         mRenderer.setFilters(filters);
     }
+
+    @Override
+    public void setFilterSync(boolean isSync) {
+        mRenderer.setFilterSync(isSync);
+    }
+
+    @Override
+    public void release() {
+        mRenderer.release();
+    }
+
 }

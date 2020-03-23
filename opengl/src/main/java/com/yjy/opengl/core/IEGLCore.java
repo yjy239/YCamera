@@ -2,9 +2,9 @@ package com.yjy.opengl.core;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.support.annotation.NonNull;
 import android.view.Surface;
 
-import androidx.annotation.NonNull;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;

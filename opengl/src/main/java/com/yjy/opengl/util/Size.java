@@ -16,7 +16,8 @@
 
 package com.yjy.opengl.util;
 
-import androidx.annotation.NonNull;
+
+import android.support.annotation.NonNull;
 
 /**
  * Immutable class for describing width and height dimensions in pixels.

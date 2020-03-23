@@ -1,9 +1,10 @@
 package com.yjy.camera.widget;
 
 import android.graphics.SurfaceTexture;
+import android.support.annotation.NonNull;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.ICameraPrepare;
@@ -83,6 +84,18 @@ public interface IPreview {
     void setFilters(ArrayList<IFBOFilter> filters);
 
 
+    /**
+     * Filter是否同步到屏幕上
+     * @param isSync
+     */
+    void setFilterSync(boolean isSync);
+
+    /**
+     * 释放
+     */
+    void release();
+
+
 
     /**
      * 相机预览器的 Renderer
@@ -101,6 +114,11 @@ public interface IPreview {
 
         void setPrepareListener(ICameraDevice prepareListener);
 
+        /**
+         * Filter是否同步到屏幕上
+         * @param isSync
+         */
+        void setFilterSync(boolean isSync);
 
         /**
          * 新增一个Filter

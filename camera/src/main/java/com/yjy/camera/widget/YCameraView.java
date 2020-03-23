@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -14,8 +16,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.yjy.camera.Camera.CameraOneDevice;
 import com.yjy.camera.Camera.ICameraDevice;
@@ -39,7 +39,8 @@ import java.util.ArrayList;
  *     version: 1.0
  * </pre>
  */
-public class YCameraView extends FrameLayout  implements ICameraDevice.OnCameraReadyListener,
+public class YCameraView extends FrameLayout
+        implements ICameraDevice.OnCameraReadyListener,
         ScreenOrientationDetector.OnDisplayChangedListener {
 
 
@@ -242,6 +243,12 @@ public class YCameraView extends FrameLayout  implements ICameraDevice.OnCameraR
 
     }
 
+    public void setFilterSync(boolean isSync){
+        if(mCameraSurfaceView!=null){
+            mCameraSurfaceView.setFilterSync(isSync);
+        }
+    }
+
     public void stopPreview() {
         if(mCameraSurfaceView!=null){
             mCameraSurfaceView.postEvent(new Runnable() {
@@ -427,6 +434,14 @@ public class YCameraView extends FrameLayout  implements ICameraDevice.OnCameraR
     }
 
 
+    public void release() {
+        mCameraSurfaceView.release();
+    }
 
-
+    public void close() {
+        if(mDevice == null){
+            return;
+        }
+        mDevice.close();
+    }
 }

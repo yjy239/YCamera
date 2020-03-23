@@ -8,12 +8,12 @@ import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;
@@ -150,9 +150,7 @@ public class Egl14Core  implements IEGLCore{
         return mEGLContext;
     }
 
-    /**
-     * Copy from {@link android.opengl.GLSurfaceView#EglHelper}
-     */
+
     private void initializeInternal(Object nativeWindow, EGLContext sharedEglContext) {
         /*
          * Create a connection for system native window

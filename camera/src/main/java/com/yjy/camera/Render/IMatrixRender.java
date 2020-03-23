@@ -1,6 +1,8 @@
 package com.yjy.camera.Render;
 
-import androidx.annotation.NonNull;
+
+
+import android.support.annotation.NonNull;
 
 import com.yjy.opengl.util.Size;
 

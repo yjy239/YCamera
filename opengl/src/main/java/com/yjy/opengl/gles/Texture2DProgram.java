@@ -3,9 +3,9 @@ package com.yjy.opengl.gles;
 import android.content.Context;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 
 import com.yjy.opengl.R;
 import com.yjy.opengl.util.Utils;

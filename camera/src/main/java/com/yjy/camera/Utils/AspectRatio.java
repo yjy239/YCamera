@@ -18,10 +18,10 @@ package com.yjy.camera.Utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
-import androidx.annotation.NonNull;
-import androidx.collection.SparseArrayCompat;
+
 
 import com.yjy.opengl.util.Size;
 

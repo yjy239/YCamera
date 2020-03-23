@@ -28,7 +28,11 @@ public interface IFBOFilter {
 
     void release();
 
-    void reset();
+    void addDrawEnd(Runnable runnable);
+
+    void clearDrawEnd();
+
+    void removeDrawEnd(Runnable runnable);
 
     int getTextureId();
 

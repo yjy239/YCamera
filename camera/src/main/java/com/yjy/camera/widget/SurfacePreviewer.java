@@ -5,10 +5,10 @@ import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Render.IFBOFilter;
@@ -117,6 +117,10 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     }
 
 
+    @Override
+    public void setFilterSync(boolean isSync) {
+        mRender.setFilterSync(isSync);
+    }
 
     @Override
     public void setRenderer(@NonNull IPreview.Renderer renderer) {
@@ -199,5 +203,10 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     @Override
     public void setFilters(ArrayList<IFBOFilter> filters) {
         mRender.setFilters(filters);
+    }
+
+    @Override
+    public void release() {
+        mRender.release();
     }
 }
