@@ -309,7 +309,20 @@ public class CameraRender extends BaseRender {
             drawTextureToScreen(oesTextureId);
         }
 
-        getShotRunnable.run();
+        if(isSync&&isRead&&mCallback != null){
+
+            isRead = false;
+            getSurfaceBuffer(new SurfaceBufferCallback() {
+                @Override
+                public void callback(Size size,ByteBuffer buffer) {
+                    if(mCallback!=null){
+                        mCallback.takeCurrentBuffer(size,buffer);
+                    }
+
+                }
+            });
+
+        }
 
 
 
@@ -431,7 +444,7 @@ public class CameraRender extends BaseRender {
                 left, right, bottom, top,
                 1, -1
         );
-
+//
 
         Log.e(TAG, "preview size = " + viewSize + ", camera size = " + surfaceSize);
     }

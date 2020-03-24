@@ -7,8 +7,10 @@ import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
+import android.view.View;
 
 
+import com.yjy.camera.Utils.CameraUtils;
 import com.yjy.opengl.gles.DynamicDrawable2D;
 import com.yjy.opengl.gles.Texture2DProgram;
 import com.yjy.opengl.util.Utils;
@@ -52,6 +54,25 @@ public class WaterFilter extends FBOFilter {
     }
 
 
+
+    public WaterFilter(Context context, View view, float offsetX, float offsetY, boolean isBottom){
+
+        super(context);
+        if(view == null){
+            throw new IllegalArgumentException("view can not be null");
+        }
+        mOffsetX = offsetX;
+        mOffsetY = offsetY;
+        if(view.getMeasuredWidth() == 0||view.getMeasuredHeight()==0){
+            view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        }
+
+
+        this.bitmap = CameraUtils.loadBitmapFromView(view);
+        this.isBottom = isBottom;
+    }
 
 
 

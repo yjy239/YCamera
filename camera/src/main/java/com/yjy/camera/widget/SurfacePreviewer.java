@@ -112,8 +112,13 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     }
 
     @Override
-    public void postEvent(Runnable runnable) {
-        queueEvent(runnable);
+    public void postEvent(final Runnable runnable) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                queueEvent(runnable);
+            }
+        });
     }
 
 

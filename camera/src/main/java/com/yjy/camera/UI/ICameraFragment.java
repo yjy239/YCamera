@@ -2,6 +2,7 @@ package com.yjy.camera.UI;
 
 import android.view.View;
 
+import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Render.IFilterAction;
 
 /**
@@ -13,7 +14,7 @@ import com.yjy.camera.Render.IFilterAction;
  *     version: 1.0
  * </pre>
  */
-public interface ICameraFragment extends IFilterAction {
+public interface ICameraFragment extends IFilterAction,ICameraAction {
 
     void openCamera();
 

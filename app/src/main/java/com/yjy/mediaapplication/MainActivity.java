@@ -13,7 +13,9 @@ import android.os.Bundle;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Engine.CameraManager;
 import com.yjy.camera.Render.WaterFilter;
+import com.yjy.camera.UI.ICameraFragment;
 import com.yjy.camera.Utils.CameraUtils;
 import com.yjy.camera.widget.RecordButton;
 import com.yjy.camera.widget.YCameraView;
@@ -29,7 +31,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    YCameraView cameraView;
+    ICameraFragment cameraView;
     RecordButton mButton;
 
     public static final int REQUEST_CODE = 11;
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        cameraView = findViewById(R.id.camera);
+        cameraView = CameraManager.init(this,R.id.camera_layout);
         mButton = findViewById(R.id.btn);
         img = findViewById(R.id.image);
         mFlashIv = findViewById(R.id.flash_iv);
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(isStart){
-                    cameraView.stopPreview();
+                    cameraView.stopCamera();
                     cameraView.takePhoto(new TakePhotoCallback() {
                         @Override
                         public void takePhoto(Bitmap bitmap) {
@@ -127,91 +129,26 @@ public class MainActivity extends AppCompatActivity {
         cameraView.addFilter(new WaterFilter(this,R.drawable.ic_launcher,
                 CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40)));
 
-
-
-        cameraView.addFilter(new WaterFilter(this,getCustomViewBitmap(),
-                CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40),true));
-
-
-        cameraView.setFilterSync(false);
-    }
-
-
-    private Bitmap getCustomViewBitmap(){
         TextView view = new TextView(this);
         view.setText("edit by yjy");
         view.setTextSize(16);
         view.setTextColor(Color.BLACK);
-        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
 
-        return loadBitmapFromView(view);
+        cameraView.addFilter(new WaterFilter(this,view,
+                CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40),true));
+
+
+        cameraView.setFilterSync(true);
     }
 
-    public static Bitmap loadBitmapFromView(View v) {
-        if (v == null) {
-            return null;
-        }
-        Bitmap screenshot;
-        screenshot = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_4444);
-        Canvas canvas = new Canvas(screenshot);
-        canvas.translate(-v.getScrollX(), -v.getScrollY());
-        //我们在用滑动View获得它的Bitmap时候，获得的是整个View的区域（包括隐藏的），如果想得到当前区域，需要重新定位到当前可显示的区域
-        v.draw(canvas);// 将 view 画到画布上
-        return screenshot;
-    }
+
 
     private void openCamera(){
-        if(Build.VERSION.SDK_INT >= 23){
-            requestPermissions(new String[]{Manifest.permission.CAMERA},REQUEST_CODE);
-        }else {
-            cameraView.startPreview();
-            img.setVisibility(View.GONE);
-            mLayout.setVisibility(View.GONE);
-            isStart = true;
-        }
+        cameraView.openCamera();
+        img.setVisibility(View.GONE);
+        mLayout.setVisibility(View.GONE);
     }
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_CODE){
-            switch (permissions[0]){
-                case Manifest.permission.CAMERA://权限1
-                    if (grantResults.length > 0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
-                        cameraView.startPreview();
-                        img.setVisibility(View.GONE);
-                        mLayout.setVisibility(View.GONE);
-                        isStart = true;
-                    }else {
-                        Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                default:
-            }
-        }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(!isStart){
-            openCamera();
-            isStart = true;
-        }
-
-
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(cameraView!=null){
-            cameraView.stopPreview();
-            isStart = false;
-        }
-    }
 }

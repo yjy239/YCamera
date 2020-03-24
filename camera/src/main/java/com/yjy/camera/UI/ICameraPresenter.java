@@ -20,7 +20,7 @@ import java.util.ArrayList;
  *     version: 1.0
  * </pre>
  */
-public interface ICameraPresenter extends IFilterAction {
+public interface ICameraPresenter extends IFilterAction,ICameraAction {
 
     /**
      * 获取对应的View

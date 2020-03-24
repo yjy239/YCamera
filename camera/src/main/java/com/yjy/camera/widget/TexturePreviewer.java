@@ -73,8 +73,14 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
     }
 
     @Override
-    public void postEvent(Runnable runnable) {
-        queueEvent(runnable);
+    public void postEvent(final Runnable runnable) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                queueEvent(runnable);
+            }
+        });
+
     }
 
     @Override

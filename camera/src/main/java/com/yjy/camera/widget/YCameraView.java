@@ -23,6 +23,7 @@ import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.R;
 import com.yjy.camera.Render.IFBOFilter;
+import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.camera.Utils.CameraUtils;
 import com.yjy.camera.Utils.ScreenOrientationDetector;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
  */
 public class YCameraView extends FrameLayout
         implements ICameraDevice.OnCameraReadyListener,
-        ScreenOrientationDetector.OnDisplayChangedListener {
+        ScreenOrientationDetector.OnDisplayChangedListener, ICameraAction {
 
 
     private IPreview mCameraSurfaceView;

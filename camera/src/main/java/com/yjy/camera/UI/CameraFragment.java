@@ -16,7 +16,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Render.IFBOFilter;
+import com.yjy.camera.Utils.AspectRatio;
 
 import java.util.ArrayList;
 
@@ -134,6 +136,12 @@ public class CameraFragment extends Fragment implements ICameraFragment {
         mPresenter.onDestroy();
     }
 
+    public void takePhoto(final TakePhotoCallback callback){
+        if(mPresenter != null){
+            mPresenter.takePhoto(callback);
+        }
+    }
+
 
     @Override
     public void closeCamera() {
@@ -176,6 +184,82 @@ public class CameraFragment extends Fragment implements ICameraFragment {
 
         mPresenter.setFilters(filters);
     }
+
+    @Override
+    public void setFlash(int flash) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setFlash(flash);
+
+
+    }
+
+    @Override
+    public int getFlash() {
+        if(mPresenter == null){
+            return 0;
+        }
+        return mPresenter.getFlash();
+    }
+
+    @Override
+    public void setAdjustViewBounds(boolean adjustViewBounds) {
+        if(mPresenter == null){
+            return;
+        }
+
+        mPresenter.setAdjustViewBounds(adjustViewBounds);
+    }
+
+    @Override
+    public boolean isAdjustViewBounds() {
+        if(mPresenter == null){
+            return false;
+        }
+        return mPresenter.isAdjustViewBounds();
+    }
+
+    @Override
+    public void setFacing(int facing) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setFacing(facing);
+    }
+
+    @Override
+    public int getFacing() {
+        if(mPresenter == null){
+            return 0;
+        }
+        return mPresenter.getFacing();
+    }
+
+    @Override
+    public void setAspectRatio(@NonNull AspectRatio ratio) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setAspectRatio(ratio);
+    }
+
+    @Override
+    public boolean getAutoFocus() {
+        if(mPresenter == null){
+            return false;
+        }
+        return mPresenter.getAutoFocus();
+    }
+
+    @Override
+    public void setAutoFocus(boolean isFocus) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setAutoFocus(isFocus);
+    }
+
 
 
 
