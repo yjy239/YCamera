@@ -2,7 +2,6 @@ package com.yjy.camera.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -11,8 +10,7 @@ import android.view.View;
 
 
 import com.yjy.camera.Camera.ICameraDevice;
-import com.yjy.camera.Render.IFBOFilter;
-import com.yjy.opengl.widget.Render;
+import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.opengl.widget.TakeBufferCallback;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;

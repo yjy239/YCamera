@@ -1,37 +1,28 @@
 package com.yjy.mediaapplication;
 
-import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraManager;
-import com.yjy.camera.Render.WaterFilter;
+import com.yjy.camera.Filter.WaterFilter;
 import com.yjy.camera.UI.ICameraFragment;
 import com.yjy.camera.Utils.CameraUtils;
 import com.yjy.camera.widget.RecordButton;
-import com.yjy.camera.widget.YCameraView;
 
 
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    ICameraFragment cameraView;
+    ICameraFragment mCamera;
     RecordButton mButton;
 
     public static final int REQUEST_CODE = 11;
@@ -49,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        cameraView = CameraManager.init(this,R.id.camera_layout);
+        mCamera = CameraManager.init(this,R.id.camera_layout);
         mButton = findViewById(R.id.btn);
         img = findViewById(R.id.image);
         mFlashIv = findViewById(R.id.flash_iv);
@@ -59,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(isStart){
-                    cameraView.stopCamera();
-                    cameraView.takePhoto(new TakePhotoCallback() {
+                    mCamera.stopCamera();
+                    mCamera.takePhoto(new TakePhotoCallback() {
                         @Override
                         public void takePhoto(Bitmap bitmap) {
                             img.setVisibility(View.VISIBLE);
@@ -89,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 flash = !flash;
-                cameraView.setFlash(flash? ICameraDevice.FLASH_TORCH:ICameraDevice.FLASH_OFF);
+                mCamera.setFlash(flash? ICameraDevice.FLASH_TORCH:ICameraDevice.FLASH_OFF);
                 if(!flash){
                     mFlashIv.setImageResource(R.drawable.ic_close_flash);
                 }else {
@@ -102,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 front = !front;
-                cameraView.setFacing(front?ICameraDevice.FACING_FRONT:ICameraDevice.FACING_BACK);
+                mCamera.setFacing(front?ICameraDevice.FACING_FRONT:ICameraDevice.FACING_BACK);
             }
         });
 
@@ -126,25 +117,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        cameraView.addFilter(new WaterFilter(this,R.drawable.ic_launcher,
-                CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40)));
+
 
         TextView view = new TextView(this);
         view.setText("edit by yjy");
         view.setTextSize(16);
         view.setTextColor(Color.BLACK);
 
-        cameraView.addFilter(new WaterFilter(this,view,
+        mCamera.addFilter(new WaterFilter(this,view,
                 CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40),true));
 
+        //mCamera.addFilter(new BlackWhiteFilter(this));
 
-        cameraView.setFilterSync(true);
+        //mCamera.addFilter(new SobelFilter(this));
+
+
+        mCamera.addFilter(new WaterFilter(this,R.drawable.ic_launcher,
+                CameraUtils.dp2px(this,100),CameraUtils.dp2px(this,40)));
+
+        mCamera.setFilterSync(true);
     }
 
 
 
     private void openCamera(){
-        cameraView.openCamera();
+        mCamera.openCamera();
         img.setVisibility(View.GONE);
         mLayout.setVisibility(View.GONE);
     }

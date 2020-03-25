@@ -7,9 +7,8 @@ import android.view.View;
 
 
 import com.yjy.camera.Camera.ICameraDevice;
-import com.yjy.camera.Camera.ICameraPrepare;
 import com.yjy.camera.Camera.TakePhotoCallback;
-import com.yjy.camera.Render.IFBOFilter;
+import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Render.IMatrixRender;
 import com.yjy.opengl.util.Size;
 import com.yjy.opengl.core.EglContext;

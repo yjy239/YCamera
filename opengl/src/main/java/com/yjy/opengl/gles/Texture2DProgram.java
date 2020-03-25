@@ -35,7 +35,6 @@ public class Texture2DProgram implements GLResource{
     @IntDef(value = {
             TEXTURE_2D,
             TEXTURE_EXTERNAL_OES,
-            TEXTURE_CUSTOM
 
     })
     public @interface GLTextureType {
@@ -78,10 +77,10 @@ public class Texture2DProgram implements GLResource{
 
     private boolean isCreate = false;
 
-    private String mVertexShader;
-    private String mFragmentShader;
+    protected String mVertexShader;
+    protected String mFragmentShader;
 
-    private ArrayList<Runnable> runnables = new ArrayList<>();
+    private ArrayList<Runnable> mRunnables = new ArrayList<>();
 
 
     public Texture2DProgram(Context context, @GLTextureType int type){
@@ -92,10 +91,11 @@ public class Texture2DProgram implements GLResource{
     }
 
     public Texture2DProgram(Context context,
-                            String vertexShader,String fragmentShader){
+                            String vertexShader,String fragmentShader,
+                            @GLTextureType int type){
         mContext = context;
 
-        mTextureTarget = TEXTURE_CUSTOM;
+        mTextureTarget = type;
         this.mVertexShader = vertexShader;
         this.mFragmentShader = fragmentShader;
 
@@ -111,18 +111,18 @@ public class Texture2DProgram implements GLResource{
         if(isCreate){
             return;
         }
+        if(!TextUtils.isEmpty(mVertexShader)&&!TextUtils.isEmpty(mFragmentShader)){
+            createProgram(mVertexShader,mFragmentShader);
+            isCreate = true;
+            return;
+        }
+
         switch (mTextureTarget) {
             case GLES20.GL_TEXTURE_2D:
                 createProgram(R.raw.vertex_shader,R.raw.fragment_shader);
                 break;
             case GLES11Ext.GL_TEXTURE_EXTERNAL_OES:
                 createProgram(R.raw.vertex_mvp_shader,R.raw.fragment_ext_shader);
-                break;
-            case TEXTURE_CUSTOM:
-                if(TextUtils.isEmpty(mVertexShader)||TextUtils.isEmpty(mFragmentShader)){
-                    throw new IllegalArgumentException("mVertexShader or mFragmentShader cannot be null");
-                }
-                createProgram(mVertexShader,mFragmentShader);
                 break;
             default:
                 throw new IllegalArgumentException("only support GLTextureType");
@@ -133,13 +133,15 @@ public class Texture2DProgram implements GLResource{
         isCreate = true;
     }
 
-    private void createProgram(String vertexRes,String fragRes){
+    protected void createProgram(String vertexRes,String fragRes){
         mProgram = new Program.Builder()
                 .addShader(new Shader(mContext,GLES20.GL_VERTEX_SHADER, vertexRes))
                 .addShader(new Shader(mContext,GLES20.GL_FRAGMENT_SHADER, fragRes))
                 .build();
 
         mProgram.create();
+
+        Utils.checkGlError("Texture2DProgram create");
 
 
         //获得glsl的变化矩阵
@@ -151,6 +153,8 @@ public class Texture2DProgram implements GLResource{
         maPositionLoc = mProgram.getGetAttribLocation("aPosition");
 
         maTextureCoordLoc = mProgram.getGetAttribLocation("aTextureCoord");
+
+
 
 
     }
@@ -193,7 +197,7 @@ public class Texture2DProgram implements GLResource{
     }
 
     public void addDrawMore(Runnable runnable) {
-        runnables.add(runnable);
+        mRunnables.add(runnable);
     }
 
 
@@ -494,11 +498,11 @@ public class Texture2DProgram implements GLResource{
 
 
     protected void drawMore(){
-        for (Runnable run : runnables){
+        for (Runnable run : mRunnables){
             run.run();
         }
 
-        runnables.clear();
+        mRunnables.clear();
     }
 
 

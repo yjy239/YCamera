@@ -10,6 +10,8 @@ import android.util.Log;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.SurfaceBufferCallback;
+import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.camera.Filter.OESOutputFilter;
 import com.yjy.opengl.widget.TakeBufferCallback;
 import com.yjy.opengl.gles.FrameDrawer;
 import com.yjy.opengl.util.Size;
@@ -266,13 +268,10 @@ public class CameraRender extends BaseRender {
             return;
         }
 
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
 
        drawScreenThroughFBO();
 
-        GLES20.glDisable(GLES20.GL_BLEND);
     }
 
     /**
@@ -457,7 +456,7 @@ public class CameraRender extends BaseRender {
 
 
 
-    public void getSurfaceBuffer(final SurfaceBufferCallback callback) {
+    private void getSurfaceBuffer(final SurfaceBufferCallback callback) {
 
 
         //小于19使用最原始的方式

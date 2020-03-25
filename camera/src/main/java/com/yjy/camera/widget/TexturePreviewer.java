@@ -14,7 +14,7 @@ import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Render.CameraRender;
-import com.yjy.camera.Render.IFBOFilter;
+import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Render.IMatrixRender;
 import com.yjy.opengl.util.Size;
 import com.yjy.opengl.core.EglContext;
@@ -22,8 +22,6 @@ import com.yjy.opengl.widget.GLTextureView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
-import javax.microedition.khronos.egl.EGL;
 
 /**
  * Camera 预览器

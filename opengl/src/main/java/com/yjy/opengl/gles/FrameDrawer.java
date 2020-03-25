@@ -39,6 +39,7 @@ public class FrameDrawer implements GLResource{
         if(isCreate){
             return;
         }
+
         mProgram.setAnalysisVertex(mRectDrawable.getCoordsPerVertex(),
                 mRectDrawable.getVertexStride(),mRectDrawable.getVertexArray(),mRectDrawable.getVertexLength());
         mProgram.setAnalysisTex(mRectDrawable.getTexCoordStride(),mRectDrawable.getTexCoordArray(),

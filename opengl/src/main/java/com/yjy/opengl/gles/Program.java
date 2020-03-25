@@ -78,7 +78,6 @@ public class Program implements GLResource {
         }
 
 
-
     }
 
     @Override
@@ -143,6 +142,49 @@ public class Program implements GLResource {
         Utils.checkGlError("glUniform1f");
     }
 
+    public void setFloat(int id,float param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform1f(id,param);
+        Utils.checkGlError("glUniform1f");
+    }
+
+    public void setFloatVec(String name,float[] param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform1fv(GLES20.glGetUniformLocation(mId,name),param.length,param,0);
+        Utils.checkGlError("glUniform1f");
+    }
+
+
+    public void setFloatVec(int id,float[] param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform1fv(id,param.length,param,0);
+        Utils.checkGlError("glUniform1fv");
+    }
+
+    public void setFloatVec2(String name,float[] param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform2fv(GLES20.glGetUniformLocation(mId,name),param.length/2,param,0);
+        Utils.checkGlError("glUniform1fv");
+    }
+
+
+    public void setFloatVec2(int id,float[] param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform2fv(id,param.length/2,param,0);
+        Utils.checkGlError("glUniform2fv");
+    }
+
+
 
     public void setInt(String name,int param){
         if(mId == 0){
@@ -152,12 +194,28 @@ public class Program implements GLResource {
         Utils.checkGlError("glUniform1i");
     }
 
+    public void setInt(int id,int param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform1i(id,param);
+        Utils.checkGlError("glUniform1i");
+    }
+
 
     public void setBoolean(String name,boolean param){
         if(mId == 0){
             return;
         }
         GLES20.glUniform1i(GLES20.glGetUniformLocation(mId,name),param?1:0);
+        Utils.checkGlError("setBoolean");
+    }
+
+    public void setBoolean(int id,boolean param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform1i(id,param?1:0);
         Utils.checkGlError("setBoolean");
     }
 
@@ -172,11 +230,29 @@ public class Program implements GLResource {
     }
 
 
+    public void setMat4v(int id,FloatBuffer param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniformMatrix4fv(id,
+                1,false,param);
+        Utils.checkGlError("glUniformMatrix4fv");
+    }
+
     public void setMat4v(String name, float[] param){
         if(mId == 0){
             return;
         }
         GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(mId,name),
+                1,false,param,0);
+        Utils.checkGlError("setMat4v");
+    }
+
+    public void setMat4v(int id,float[] param){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniformMatrix4fv(id,
                 1,false,param,0);
         Utils.checkGlError("setMat4v");
     }
@@ -187,6 +263,15 @@ public class Program implements GLResource {
             return;
         }
         GLES20.glUniform3f(GLES20.glGetUniformLocation(mId,name),
+                x,y,z);
+        Utils.checkGlError("glUniform3f");
+    }
+
+    public void setVec3(int id, float x,float y,float z){
+        if(mId == 0){
+            return;
+        }
+        GLES20.glUniform3f(id,
                 x,y,z);
         Utils.checkGlError("glUniform3f");
     }

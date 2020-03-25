@@ -17,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
-import com.yjy.camera.Render.IFBOFilter;
+import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.yjy.camera.Render;
+package com.yjy.camera.Filter;
 
 import com.yjy.opengl.gles.FrameDrawer;
 import com.yjy.opengl.gles.Texture2DProgram;

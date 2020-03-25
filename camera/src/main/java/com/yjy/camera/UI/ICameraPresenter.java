@@ -6,10 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
-import com.yjy.camera.Render.IFBOFilter;
-import com.yjy.camera.Render.IFilterAction;
-
-import java.util.ArrayList;
+import com.yjy.camera.Filter.IFilterAction;
 
 /**
  * <pre>

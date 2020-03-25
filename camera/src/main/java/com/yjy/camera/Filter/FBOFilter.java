@@ -1,4 +1,4 @@
-package com.yjy.camera.Render;
+package com.yjy.camera.Filter;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -31,9 +31,8 @@ public class FBOFilter implements IFBOFilter {
     protected int fbTextureId;
     //private Program mWaterProgram;
 
-    private int mViewWidth;
-    private int mViewHeight;
-    private ByteBuffer mBuffer;
+    protected int mViewWidth;
+    protected int mViewHeight;
 
 
     protected FrameDrawer mFBODrawer;
@@ -72,12 +71,14 @@ public class FBOFilter implements IFBOFilter {
     public Texture2DProgram getTextureProgram() {
         Texture2DProgram program;
         if(!TextUtils.isEmpty(mVertexShader)&&!TextUtils.isEmpty(mFragmentShader)){
-            program = new Texture2DProgram(mContext,mVertexShader,mFragmentShader);
+            program = new Texture2DProgram(mContext,mVertexShader,
+                    mFragmentShader,getTextureType());
         }else {
             program = new Texture2DProgram(mContext,getTextureType());
         }
 
         program.create();
+
         return program;
     }
 
@@ -88,9 +89,10 @@ public class FBOFilter implements IFBOFilter {
 
     @Override
     public void onSurfaceCreated(int viewWidth, int viewHeight) {
-        mFBODrawer = getFrameDrawer();
         mViewWidth = viewWidth;
         mViewHeight = viewHeight;
+        mFBODrawer = getFrameDrawer();
+
 
     }
 
