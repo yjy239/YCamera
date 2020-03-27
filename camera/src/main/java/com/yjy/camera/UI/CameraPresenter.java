@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.R;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
@@ -32,7 +33,15 @@ public class CameraPresenter implements ICameraPresenter{
     private boolean isStart = false;
     private boolean isHardwareAccelerated = false;
 
+    private CameraParam mCameraParams;
+
     private ArrayList<Runnable> mRunnables = new ArrayList<>();
+
+
+    public void setCameraParams(CameraParam cameraParams) {
+        this.mCameraParams = cameraParams;
+    }
+
 
     public void setHardwareAccelerated(boolean hardwareAccelerated) {
         isHardwareAccelerated = hardwareAccelerated;
@@ -54,9 +63,16 @@ public class CameraPresenter implements ICameraPresenter{
 
         mCameraView = mContentView.findViewById(R.id.camera);
 
+        if(mCameraParams != null){
+            mCameraView.copyCameraParams(mCameraParams);
+        }
+
+
         for(Runnable runnable : mRunnables){
             runnable.run();
         }
+
+
 
         return mContentView;
     }
@@ -66,8 +82,12 @@ public class CameraPresenter implements ICameraPresenter{
             if(mCameraView == null){
                 return;
             }
-            mCameraView.openCamera();
-            isStart = true;
+            if(!mCameraView.isCameraOpened()){
+                mCameraView.openCamera();
+                isStart = true;
+            }
+
+
         }
 
     }
@@ -95,7 +115,10 @@ public class CameraPresenter implements ICameraPresenter{
             if(mCameraView == null){
                 return;
             }
-            mCameraView.stopCamera();
+            if(mCameraView.isCameraOpened()){
+                mCameraView.stopCamera();
+                isStart = true;
+            }
             isStart = false;
         }
 

@@ -2,8 +2,13 @@ package com.yjy.camera.Engine;
 
 import android.view.View;
 
+import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.opengl.util.Size;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * <pre>
@@ -37,6 +42,39 @@ public class CameraParam {
 
     public static final float HARDWARE_ZOOM_START = 0.0f;
 
+    private boolean isFilterSync = false;
+
+    private ArrayList<WeakReference<IFBOFilter>> mFilters = new ArrayList<>();
+
+
+    public ArrayList<WeakReference<IFBOFilter>> getFilters() {
+        return mFilters;
+    }
+
+
+    public void addFilters(IFBOFilter filters) {
+        this.mFilters.add(new WeakReference<IFBOFilter>(filters)) ;
+    }
+
+
+    public void removeFilters(IFBOFilter filter) {
+        Iterator<WeakReference<IFBOFilter>> it = mFilters.iterator();
+        while (it.hasNext()){
+            WeakReference<IFBOFilter> f = it.next();
+            if(filter == f.get()){
+                it.remove();
+                break;
+            }
+        }
+    }
+
+    public boolean isFilterSync() {
+        return isFilterSync;
+    }
+
+    public void setFilterSync(boolean filterSync) {
+        isFilterSync = filterSync;
+    }
 
     /**
      * 是否是软件模式Zoom
@@ -161,6 +199,22 @@ public class CameraParam {
 
     public int getViewWidth() {
         return mViewWidth;
+    }
+
+    public CameraParam copyTo(CameraParam cameraParam){
+        cameraParam.aspectRatio = aspectRatio;
+        cameraParam.facing = facing;
+        cameraParam.autoFocus = autoFocus;
+        cameraParam.flashMode = flashMode;
+        cameraParam.adjustViewBounds = adjustViewBounds;
+        cameraParam.mZoom = mZoom;
+        cameraParam.mZoomSensitive = mZoomSensitive;
+        cameraParam.isSoftwareZoom = isSoftwareZoom;
+        cameraParam.isFilterSync = isFilterSync;
+
+
+
+        return cameraParam;
     }
 
 

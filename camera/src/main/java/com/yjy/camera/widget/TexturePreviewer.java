@@ -184,20 +184,21 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
 
     @Override
     public void setZoom(@FloatRange(from = 0.0,to = 1.0)final float zoom) {
-        if(mCameraDevice != null){
-            if(mCameraDevice.isZoomSupport()&&!mParam.isSoftwareZoom()){
-                mCameraDevice.notifyZoomChanged();
-            }else {
-                postEvent(new Runnable() {
-                    @Override
-                    public void run() {
+        postEvent(new Runnable() {
+            @Override
+            public void run() {
+                if(mCameraDevice != null){
+                    if(mCameraDevice.isZoomSupport()&&!mParam.isSoftwareZoom()){
+                        mCameraDevice.notifyZoomChanged();
+                    }else {
                         mRenderer.setZoom(zoom);
                     }
-                });
+
+                }
 
             }
+        });
 
-        }
     }
 
     @Override

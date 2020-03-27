@@ -1,14 +1,13 @@
 package com.yjy.mediaapplication;
 
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
-import com.yjy.camera.Engine.CameraManager;
+import com.yjy.camera.Engine.CameraFragmentBuilder;
 import com.yjy.camera.Filter.BlackWhiteFilter;
 import com.yjy.camera.Filter.BlurFilter;
 import com.yjy.camera.Filter.LPSFilter;
@@ -58,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mMoreIv = findViewById(R.id.more_iv);
         mSyncIv = findViewById(R.id.sync_iv);
-        mCamera = CameraManager.init(this,R.id.camera_layout);
+        mCamera = new CameraFragmentBuilder(this,R.id.camera_layout)
+                .build();
         mButton = findViewById(R.id.btn);
         img = findViewById(R.id.image);
         mFlashIv = findViewById(R.id.flash_iv);
@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        isStart = true;
 
         mButton.setIsRecording(true);
 
@@ -166,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mCamera.setFilterSync(isSync);
 
         mCamera.setSoftwareZoom(false);
@@ -219,7 +220,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

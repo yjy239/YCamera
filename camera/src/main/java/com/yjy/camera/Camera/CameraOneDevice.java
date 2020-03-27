@@ -292,7 +292,7 @@ public class CameraOneDevice extends BaseCameraDevice {
                 int result = Math.round(zoomStep*zoomFactor);
 
                 if(result < maxZooms&&result >=0){
-                    Log.e(TAG,"maxZoom:"+maxZooms+" zoomStep:"+zoomStep+" result:"+result);
+                   // Log.e(TAG,"maxZoom:"+maxZooms+" zoomStep:"+zoomStep+" result:"+result);
                     mCameraParams.setZoom(result);
                     mCameraImpl.setParameters(mCameraParams);
                 }

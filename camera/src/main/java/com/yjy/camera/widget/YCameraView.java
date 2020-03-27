@@ -29,6 +29,7 @@ import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.camera.Utils.ScreenOrientationDetector;
 import com.yjy.opengl.util.Size;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -318,8 +319,10 @@ public class YCameraView extends FrameLayout
                 // 聚焦
                 focus((int) event.getX(), (int) event.getY());
             }
-            return true;
+            return mScaleGestureDetector.onTouchEvent(event);
         }
+
+
         return mScaleGestureDetector.onTouchEvent(event);
     }
 
@@ -518,8 +521,8 @@ public class YCameraView extends FrameLayout
 
 //        Log.e("offset","offsetX:"+offsetX+" offsetY: "
 //                +offsetY);
-        Log.e("mZoomStart",""+mZoomStart+" zoom "
-                +zoom+" factor:"+factor);
+//        Log.e("mZoomStart",""+mZoomStart+" zoom "
+//                +zoom+" factor:"+factor);
         setZoom(zoom);
         return false;
     }
@@ -537,4 +540,31 @@ public class YCameraView extends FrameLayout
         stopZoom();
     }
 
+    public void copyCameraParams(CameraParam cameraParams) {
+        if(cameraParams ==null){
+            return;
+        }
+        mParams = cameraParams.copyTo(mParams);
+        
+        ArrayList<WeakReference<IFBOFilter>> filters = cameraParams.getFilters();
+        for(WeakReference<IFBOFilter> filter : filters){
+            if(filter != null&&filter.get()!=null){
+                addFilter(filter.get());
+            }
+
+        }
+        filters.clear();
+
+        if(mDevice != null){
+            mDevice.notifyAutoFocusChanged();
+            mDevice.notifyZoomChanged();
+            mDevice.notifyAspectRatioChanged();
+            mDevice.notifyFacingChanged();
+            mDevice.notifyFlashModeChanged();
+        }
+
+
+
+
+    }
 }

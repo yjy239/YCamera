@@ -179,7 +179,7 @@ public class CameraRender extends BaseRender {
         if(mDrawer != null){
             if(scale > 0){
                 scale = 1/scale;
-                Log.e(TAG,"1/"+scale);
+               // Log.e(TAG,"1/"+scale);
                 if(scale > 1){
                     scale =1;
                 }

@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
 
@@ -38,9 +39,16 @@ public class CameraFragment extends Fragment implements ICameraFragment {
 
     private CameraPresenter mPresenter;
 
+
+
     public CameraFragment(){
         mPresenter = new CameraPresenter();
     }
+
+    public void setCameraParams(CameraParam cameraParams) {
+        mPresenter.setCameraParams(cameraParams);
+    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -91,18 +99,15 @@ public class CameraFragment extends Fragment implements ICameraFragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == REQUEST_CODE){
-            switch (permissions[0]){
-                case Manifest.permission.CAMERA://权限1
-                    if (grantResults.length > 0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
-                        if(mPresenter == null){
-                            return;
-                        }
-                        mPresenter.openCamera();
-                    }else {
-                        Toast.makeText(getActivity(), "You denied the permission", Toast.LENGTH_SHORT).show();
+            if(permissions.length>0&&  Manifest.permission.CAMERA.equals(permissions[0])){
+                if (grantResults.length > 0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                    if(mPresenter == null){
+                        return;
                     }
-                    break;
-                default:
+                    mPresenter.openCamera();
+                }else {
+                    Toast.makeText(getActivity(), "You denied the permission", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
