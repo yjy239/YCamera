@@ -9,8 +9,10 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -40,7 +42,8 @@ import java.util.ArrayList;
  */
 public class YCameraView extends FrameLayout
         implements ICameraDevice.OnCameraReadyListener,
-        ScreenOrientationDetector.OnDisplayChangedListener, ICameraAction {
+        ScreenOrientationDetector.OnDisplayChangedListener,
+        ICameraAction,ScaleGestureDetector.OnScaleGestureListener {
 
 
     private IPreview mCameraSurfaceView;
@@ -49,6 +52,11 @@ public class YCameraView extends FrameLayout
 
     private CameraFocusView mFocusView;
     private ScreenOrientationDetector mScreenOrientationDetector;
+    //开始Zoom的倍数
+    private float mZoomStart = 0f;
+
+
+    private ScaleGestureDetector mScaleGestureDetector;
 
 
 
@@ -70,6 +78,8 @@ public class YCameraView extends FrameLayout
         this.mScreenOrientationDetector = new ScreenOrientationDetector(context, this);
         mDevice = new CameraOneDevice(mParams,this);
 
+
+        mScaleGestureDetector = new ScaleGestureDetector(context,this);
 
         setAutoFocus(true);
         setAdjustViewBounds(true);
@@ -230,7 +240,24 @@ public class YCameraView extends FrameLayout
         mDevice.notifyDesiredSizeChanged();
     }
 
-    public void startPreview() {
+
+    public void setFilterSync(boolean isSync){
+        if(mCameraSurfaceView!=null){
+            mCameraSurfaceView.setFilterSync(isSync);
+        }
+    }
+
+
+    @Override
+    public boolean isCameraOpened() {
+        if(mCameraSurfaceView == null){
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public void openCamera() {
         if(mCameraSurfaceView!=null){
             mCameraSurfaceView.postEvent(new Runnable() {
                 @Override
@@ -242,13 +269,8 @@ public class YCameraView extends FrameLayout
 
     }
 
-    public void setFilterSync(boolean isSync){
-        if(mCameraSurfaceView!=null){
-            mCameraSurfaceView.setFilterSync(isSync);
-        }
-    }
-
-    public void stopPreview() {
+    @Override
+    public void stopCamera() {
         if(mCameraSurfaceView!=null){
             mCameraSurfaceView.postEvent(new Runnable() {
                 @Override
@@ -257,6 +279,19 @@ public class YCameraView extends FrameLayout
                 }
             });
         }
+    }
+
+    @Override
+    public void closeCamera() {
+        if(mDevice == null){
+            return;
+        }
+        mDevice.close();
+    }
+
+    @Override
+    public void onDestroy() {
+        mCameraSurfaceView.release();
     }
 
 
@@ -285,7 +320,7 @@ public class YCameraView extends FrameLayout
             }
             return true;
         }
-        return super.onTouchEvent(event);
+        return mScaleGestureDetector.onTouchEvent(event);
     }
 
     //进行聚焦
@@ -325,6 +360,33 @@ public class YCameraView extends FrameLayout
         mDevice.notifyAutoFocusChanged();
     }
 
+    @Override
+    public void setZoom(float scale) {
+        if(mDevice != null){
+            mParams.setZoom(scale);
+            mCameraSurfaceView.setZoom(scale);
+        }
+    }
+
+    /**
+     * before openCamera
+     * @param isSoftWareZoom 是否使用
+     */
+    public void setSoftwareZoom(boolean isSoftWareZoom){
+        mParams.setSoftwareZoom(isSoftWareZoom);
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mDevice != null){
+            mCameraSurfaceView.stopZoom();
+        }
+    }
+
+
+    public float getZoom(){
+        return mParams.getZoom();
+    }
 
     /**
      * 设置摄像头
@@ -433,14 +495,46 @@ public class YCameraView extends FrameLayout
     }
 
 
-    public void release() {
-        mCameraSurfaceView.release();
+
+
+
+
+
+    @Override
+    public boolean onScale(ScaleGestureDetector detector) {
+//        float offsetX = detector.getCurrentSpanX() - detector.getPreviousSpanX();
+//        float offsetY = detector.getCurrentSpanY() - detector.getPreviousSpanY();
+//        boolean isZoomOut = offsetY>0&&offsetX>0;
+//        boolean isZoomIn = offsetY<0&&offsetX<0;
+        float zoom = mZoomStart;
+        float factor = detector.getScaleFactor() - 1;
+//        if(isZoomOut){
+//            zoom = mZoomStart + factor;
+//        }else if(isZoomIn){
+//            zoom = mZoomStart + factor;
+//        }
+
+        zoom = mZoomStart + factor;
+
+//        Log.e("offset","offsetX:"+offsetX+" offsetY: "
+//                +offsetY);
+        Log.e("mZoomStart",""+mZoomStart+" zoom "
+                +zoom+" factor:"+factor);
+        setZoom(zoom);
+        return false;
     }
 
-    public void close() {
-        if(mDevice == null){
-            return;
-        }
-        mDevice.close();
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
+
+        mZoomStart = getZoom();
+
+        return true;
     }
+
+    @Override
+    public void onScaleEnd(ScaleGestureDetector detector) {
+        stopZoom();
+    }
+
 }

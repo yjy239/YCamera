@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +49,8 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     private Context mContext;
     private Handler mMainHandler = new android.os.Handler(Looper.getMainLooper());
 
+    private ICameraDevice mCameraDevice;
+
 
 
     public SurfacePreviewer(Context context, CameraParam param, ICameraDevice prepare) {
@@ -56,9 +59,10 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     }
 
 
-    void init(Context context,CameraParam param,final ICameraDevice prepare){
+    void init(Context context,CameraParam param, ICameraDevice prepare){
         mContext = context;
         mParam = param;
+        mCameraDevice = prepare;
 
         mRender = new CameraRender();
         setEGLWindowSurfaceFactory(new EGLWindowSurfaceFactory(){
@@ -69,7 +73,7 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
                 try {
                     if(mRender!=null){
                         mRender.setContext(getContext());
-                        mRender.setPrepareListener(prepare);
+                        mRender.setPrepareListener(mCameraDevice);
 //                        if(!mRender.isInit()){
 //                            mRender.onSurfaceCreated(null,config);
 //                        }
@@ -211,5 +215,40 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     @Override
     public void release() {
         mRender.release();
+        mCameraDevice = null;
+    }
+
+    @Override
+    public void setZoom(@FloatRange(from = 0.0,to = 1.0)final float zoom) {
+        if(mCameraDevice != null){
+            if(mCameraDevice.isZoomSupport()&&!mParam.isSoftwareZoom()){
+                mCameraDevice.notifyZoomChanged();
+            }else {
+                postEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRender.setZoom(zoom);
+                    }
+                });
+
+            }
+
+        }
+
+    }
+
+    @Override
+    public float getZoom() {
+        return mParam.getZoom();
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mCameraDevice != null){
+            if(mCameraDevice.isZoomSupport()){
+                mCameraDevice.stopZoom();
+            }
+
+        }
     }
 }

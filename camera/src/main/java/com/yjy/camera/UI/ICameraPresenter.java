@@ -37,15 +37,7 @@ public interface ICameraPresenter extends IFilterAction,ICameraAction {
      */
     void setHardwareAccelerated(boolean hardwareAccelerated);
 
-    /**
-     * 打开Camera
-     */
-    void openCamera();
 
-    /**
-     * 停止Camera
-     */
-    void stopCamera();
 
 
 
@@ -56,14 +48,6 @@ public interface ICameraPresenter extends IFilterAction,ICameraAction {
      */
     void takePhoto(TakePhotoCallback callback);
 
-    /**
-     * 关闭相机
-     */
-    void closeCamera();
 
-    /**
-     * 销毁相机
-     */
-    void onDestroy();
 
 }

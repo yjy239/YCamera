@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -41,9 +42,11 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
     private Renderer mRenderer;
     private Handler mHandler;
     private CameraParam mParam;
+    private ICameraDevice mCameraDevice;
 
     TexturePreviewer(Context context, CameraParam param, final ICameraDevice prepare) {
         super(context);
+        mCameraDevice = prepare;
         mParam = param;
         mHandler = new Handler(Looper.getMainLooper());
 
@@ -179,4 +182,36 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
         mRenderer.release();
     }
 
+    @Override
+    public void setZoom(@FloatRange(from = 0.0,to = 1.0)final float zoom) {
+        if(mCameraDevice != null){
+            if(mCameraDevice.isZoomSupport()&&!mParam.isSoftwareZoom()){
+                mCameraDevice.notifyZoomChanged();
+            }else {
+                postEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRenderer.setZoom(zoom);
+                    }
+                });
+
+            }
+
+        }
+    }
+
+    @Override
+    public float getZoom() {
+        return mParam.getZoom();
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mCameraDevice != null){
+            if(mCameraDevice.isZoomSupport()){
+                mCameraDevice.stopZoom();
+            }
+
+        }
+    }
 }

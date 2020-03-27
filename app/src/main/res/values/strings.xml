@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">MediaApplication</string>
     <string name="action_settings">Settings</string>
+
+    <string name="add_water_icon_filter">图标水印</string>
+    <string name="bw_filter">黑白滤镜</string>
+    <string name="sobel_filter">索贝尔算子</string>
+    <string name="add_water_view_filter">view水印</string>
+    <string name="shaper_filter">锐化滤镜</string>
+    <string name="LPS_filter">拉普拉斯滤镜</string>
+
+    <string name="blur_filter">模糊滤镜</string>
 </resources>

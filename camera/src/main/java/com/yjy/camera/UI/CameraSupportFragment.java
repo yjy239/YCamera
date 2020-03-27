@@ -112,7 +112,7 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
         if(mPresenter == null){
             return;
         }
-        mPresenter.openCamera();
+        openCamera();
 
     }
 
@@ -123,7 +123,24 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
         if(mPresenter == null){
             return;
         }
-        mPresenter.stopCamera();
+        stopCamera();
+    }
+
+    @Override
+    public boolean isCameraOpened() {
+        if(mPresenter == null){
+            return false;
+        }
+        return mPresenter.isCameraOpened();
+    }
+
+
+    @Override
+    public void setSoftwareZoom(boolean isSoftwareZoom) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setSoftwareZoom(isSoftwareZoom);
     }
 
     @Override
@@ -217,6 +234,22 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
             return;
         }
         mPresenter.setAutoFocus(isFocus);
+    }
+
+    @Override
+    public void setZoom(float scale) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setZoom(scale);
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.stopZoom();
     }
 
 

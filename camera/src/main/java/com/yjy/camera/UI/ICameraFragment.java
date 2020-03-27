@@ -15,14 +15,11 @@ import com.yjy.camera.Filter.IFilterAction;
  */
 public interface ICameraFragment extends IFilterAction,ICameraAction {
 
-    void openCamera();
-
-    void closeCamera();
-
-    void stopCamera();
-
     void setCameraType(@CameraType int type);
 
     View getView();
+
+
+
 
 }

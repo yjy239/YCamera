@@ -1,5 +1,7 @@
 package com.yjy.opengl.gles;
 
+import android.util.Log;
+
 import com.yjy.opengl.util.Utils;
 
 import java.nio.ByteBuffer;
@@ -18,7 +20,8 @@ import javax.microedition.khronos.egl.EGL;
  */
 public class FrameDrawer implements GLResource{
 
-    private Drawable2D mRectDrawable = new Drawable2D();
+    public static final String TAG = FrameDrawer.class.getName();
+    private ScaledDrawable2D mRectDrawable = new ScaledDrawable2D();
     private Texture2DProgram mProgram;
     private boolean isCreate = false;
 
@@ -28,7 +31,7 @@ public class FrameDrawer implements GLResource{
         create();
     }
 
-    public FrameDrawer(Texture2DProgram mProgram, Drawable2D drawable2D) {
+    public FrameDrawer(Texture2DProgram mProgram, ScaledDrawable2D drawable2D) {
         this.mProgram = mProgram;
         create(drawable2D);
     }
@@ -49,7 +52,7 @@ public class FrameDrawer implements GLResource{
     }
 
 
-    public void create(Drawable2D drawable2D){
+    public void create(ScaledDrawable2D drawable2D){
 
         mProgram.deleteVbo();
         mRectDrawable  = drawable2D;
@@ -60,7 +63,7 @@ public class FrameDrawer implements GLResource{
         mProgram.bindVBO();
     }
 
-    public void reset(Drawable2D drawable2D){
+    public void reset(ScaledDrawable2D drawable2D){
 
         mRectDrawable  = drawable2D;
         mProgram.setAnalysisVertex(mRectDrawable.getCoordsPerVertex(),
@@ -81,6 +84,15 @@ public class FrameDrawer implements GLResource{
 
 
 
+    }
+
+    public void setScale(float scale){
+        if (mRectDrawable == null){
+            return;
+        }
+
+        mRectDrawable.setScale(scale);
+        reset(mRectDrawable);
     }
 
     /**
@@ -241,5 +253,12 @@ public class FrameDrawer implements GLResource{
 
     public void addDrawMore(Runnable runnable) {
         mProgram.addDrawMore(runnable);
+    }
+
+    public float getScale() {
+        if(mRectDrawable == null){
+            return 0;
+        }
+        return mRectDrawable.getScale();
     }
 }

@@ -46,6 +46,8 @@ public class FBOFilter implements IFBOFilter {
 
     private List<Runnable> onEndRunnable = new ArrayList<>();
 
+    private boolean isInit = false;
+
 
     public FBOFilter(Context context){
         mContext = context;
@@ -65,6 +67,11 @@ public class FBOFilter implements IFBOFilter {
     public void setVertexAndTextureMatrix(float[] vertexMatrix,float[] OESTextureMatrix){
         this.mVertexMatrix = vertexMatrix;
         this.mOESTextureMatrix = OESTextureMatrix;
+    }
+
+    @Override
+    public boolean isInit() {
+        return isInit;
     }
 
     @Override
@@ -93,7 +100,6 @@ public class FBOFilter implements IFBOFilter {
         mViewHeight = viewHeight;
         mFBODrawer = getFrameDrawer();
 
-
     }
 
     @Override
@@ -104,7 +110,7 @@ public class FBOFilter implements IFBOFilter {
         setUpTexture(width,height);
         setUpFbo();
 
-
+        isInit = true;
     }
 
     @Override

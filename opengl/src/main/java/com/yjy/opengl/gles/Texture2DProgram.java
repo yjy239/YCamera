@@ -73,7 +73,7 @@ public class Texture2DProgram implements GLResource{
 
     protected int mTexLength = 0;
 
-    private int mVboID = 0;
+    private int mVboID = Utils.GL_NOT_INIT;
 
     private boolean isCreate = false;
 
@@ -269,7 +269,7 @@ public class Texture2DProgram implements GLResource{
         Utils.checkGlError("glBindTexture " + texId);
 
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-                GLES20.GL_NEAREST);
+                GLES20.GL_LINEAR);
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
                 GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
@@ -288,7 +288,7 @@ public class Texture2DProgram implements GLResource{
         Utils.checkGlError("glBindTexture " + texId);
 
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-                GLES20.GL_NEAREST);
+                GLES20.GL_LINEAR);
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
                 GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,

@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.yjy.camera.Engine.CameraParam;
@@ -49,6 +50,13 @@ public class CameraOneDevice extends BaseCameraDevice {
 
     private int mWidth = 0;
     private int mHeight = 0;
+
+    //支持Zoom
+    private boolean isZoomSupport = false;
+    //支持平滑Zoom
+    private boolean isZoomSmooth = false;
+
+
 
 
 
@@ -158,7 +166,7 @@ public class CameraOneDevice extends BaseCameraDevice {
 
 
     private Size prepare(){
-        int cameraId = chooseCamera(param.getFacing());
+        int cameraId = chooseCamera(mParam.getFacing());
 
         try {
             mCameraImpl = Camera.open(cameraId);
@@ -200,9 +208,13 @@ public class CameraOneDevice extends BaseCameraDevice {
             mCameraParams.setPictureSize(pictureSize.getWidth(),pictureSize.getHeight());
 
             //计算旋转
-            mCameraParams.setRotation(calcTakenPictureRotation(param.getScreenOrientationDegrees()));
+            mCameraParams.setRotation(calcTakenPictureRotation(mParam.getScreenOrientationDegrees()));
             //自动对焦
-            setAutoFocus(param.isAutoFocus());
+            setAutoFocus(mParam.isAutoFocus());
+
+            isZoomSupport = mCameraParams.isZoomSupported();
+
+            isZoomSmooth = mCameraParams.isSmoothZoomSupported();
 
             //闪光模式
             setFlashMode(flashMode);
@@ -210,12 +222,23 @@ public class CameraOneDevice extends BaseCameraDevice {
             mCameraImpl.setParameters(mCameraParams);
 
             //计算屏幕的旋转
-            mCameraImpl.setDisplayOrientation(calcPreviewFrameOrientation(param.getScreenOrientationDegrees()));
+            mCameraImpl.setDisplayOrientation(calcPreviewFrameOrientation(mParam.getScreenOrientationDegrees()));
 
 
+            mCameraImpl.setZoomChangeListener(new Camera.OnZoomChangeListener() {
+                @Override
+                public void onZoomChange(int zoomValue, boolean stopped, Camera camera) {
+                    if(stopped){
+                        //提前停止了，可能不是目标的ZOOM
+                        mParam.setZoom(zoomValue);
+                    }
+                }
+            });
 
-            //mCameraImpl.setPreviewTexture(mBufferTexture);
-            //打开预览
+            if(!isZoomSupport){
+                mParam.setZoom(1.0f);
+                mParam.setSoftwareZoom(true);
+            }
 
             return previewSize;
 
@@ -234,7 +257,65 @@ public class CameraOneDevice extends BaseCameraDevice {
         }
     }
 
+    @Override
+    public boolean isZoomSupport() {
+        return isZoomSupport;
+    }
 
+    /**
+     * 只允许100的进度条,0最小，1最大.保证能读满100进度条
+     *
+     * CameraRender中，则是设置texture的渲染坐标，1最小，0最大
+     */
+    @Override
+    public void notifyZoomChanged() {
+        if(mCameraImpl!=null){
+            if(isZoomSmooth&&mCameraImpl!=null){
+                int maxZooms = mCameraParams.getMaxZoom();
+                //先拿到0-1
+                //计算每一个step对应提升的Zoom范围
+                float zoomFactor = maxZooms / mParam.getZoomSensitive();
+                //当前提升多少步
+                float zoomStep = mParam.getZoom();
+
+                int result = Math.round(zoomStep*zoomFactor);
+
+                mCameraImpl.startSmoothZoom(result);
+            }else if(isZoomSupport&&mCameraImpl!=null){
+                int maxZooms = mCameraParams.getMaxZoom();
+                //先拿到0-1
+                //计算每一个step对应提升的Zoom范围
+                float zoomFactor = maxZooms / mParam.getZoomSensitive();
+                //当前提升多少步
+                float zoomStep = mParam.getZoom();
+
+                int result = Math.round(zoomStep*zoomFactor);
+
+                if(result < maxZooms&&result >=0){
+                    Log.e(TAG,"maxZoom:"+maxZooms+" zoomStep:"+zoomStep+" result:"+result);
+                    mCameraParams.setZoom(result);
+                    mCameraImpl.setParameters(mCameraParams);
+                }
+
+
+
+            }
+        }
+    }
+
+    @Override
+    public float getZoom() {
+        return mParam.getZoom();
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mCameraImpl!=null){
+            if(isZoomSmooth&&mCameraImpl!=null){
+                mCameraImpl.stopSmoothZoom();
+            }
+        }
+    }
 
     private static Size getOptimalSize(List<Camera.Size> supportList, int width, int height) {
         // camera的宽度是大于高度的，这里要保证expectWidth > expectHeight
@@ -459,7 +540,7 @@ public class CameraOneDevice extends BaseCameraDevice {
     public void notifyAutoFocusChanged() {
         //是否需要自动对焦
         if(!isCameraOpened()){
-            this.autoFocus = param.isAutoFocus();
+            this.autoFocus = mParam.isAutoFocus();
             return;
         }
 
@@ -471,24 +552,24 @@ public class CameraOneDevice extends BaseCameraDevice {
         }else{
             //不自动对焦则
             if (mIsFocusing
-                    || param.getViewHeight() == 0
-                    ||param.getViewWidth()==0) {
+                    || mParam.getViewHeight() == 0
+                    || mParam.getViewWidth()==0) {
                 return;
             }
 
             mIsFocusing = true;
-            Point focusPoint = new Point(param.getFocusX(), param.getFocusY());
-            if (param.getFocusCallback() != null) {
-                param.getFocusCallback().beginFocus(param.getFocusX(), param.getFocusY());
+            Point focusPoint = new Point(mParam.getFocusX(), mParam.getFocusY());
+            if (mParam.getFocusCallback() != null) {
+                mParam.getFocusCallback().beginFocus(mParam.getFocusX(), mParam.getFocusY());
             }
 
-            newCameraFocus(param.getViewWidth(),param.getViewHeight(),
+            newCameraFocus(mParam.getViewWidth(), mParam.getViewHeight(),
                     focusPoint, new Camera.AutoFocusCallback() {
                 @Override
                 public void onAutoFocus(boolean success, Camera camera) {
                     mIsFocusing = false;
-                    if (param.getFocusCallback() != null) {
-                        param.getFocusCallback().endFocus(success);
+                    if (mParam.getFocusCallback() != null) {
+                        mParam.getFocusCallback().endFocus(success);
                     }
                 }
             });
@@ -498,17 +579,17 @@ public class CameraOneDevice extends BaseCameraDevice {
     @Override
     public void notifyFlashModeChanged() {
         if (isCameraOpened()) {
-            if (flashMode == param.getFlashMode()) {
+            if (flashMode == mParam.getFlashMode()) {
                 return;
             }
             // resetMatrix params
-            if (setFlashMode(param.getFlashMode())) {
+            if (setFlashMode(mParam.getFlashMode())) {
                 mCameraImpl.setParameters(mCameraParams);
             }
         }
         // not previewing
         else {
-            flashMode = param.getFlashMode();
+            flashMode = mParam.getFlashMode();
         }
     }
 

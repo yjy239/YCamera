@@ -117,6 +117,14 @@ public class CameraFragment extends Fragment implements ICameraFragment {
 
     }
 
+    @Override
+    public void setSoftwareZoom(boolean isSoftwareZoom) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setSoftwareZoom(isSoftwareZoom);
+    }
+
 
     @Override
     public void onStop() {
@@ -242,6 +250,30 @@ public class CameraFragment extends Fragment implements ICameraFragment {
             return;
         }
         mPresenter.setAspectRatio(ratio);
+    }
+
+    @Override
+    public void setZoom(float scale) {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.setZoom(scale);
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mPresenter == null){
+            return;
+        }
+        mPresenter.stopZoom();
+    }
+
+    @Override
+    public boolean isCameraOpened() {
+        if(mPresenter == null){
+            return false;
+        }
+        return mPresenter.isCameraOpened();
     }
 
     @Override

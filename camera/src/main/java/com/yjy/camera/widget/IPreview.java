@@ -9,7 +9,9 @@ import android.view.View;
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.camera.Filter.IFilterAction;
 import com.yjy.camera.Render.IMatrixRender;
+import com.yjy.camera.UI.ICameraAction;
 import com.yjy.opengl.util.Size;
 import com.yjy.opengl.core.EglContext;
 import com.yjy.opengl.widget.Render;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
  *     version: 1.0
  * </pre>
  */
-public interface IPreview {
+public interface IPreview  {
 
     void postEvent(Runnable runnable);
 
@@ -94,6 +96,23 @@ public interface IPreview {
      */
     void release();
 
+    /**
+     * 设置缩放
+     * @param scale
+     */
+    void setZoom(float scale);
+
+    /**
+     * 获取缩放
+     * @return
+     */
+    float getZoom();
+
+
+    /**
+     * 停止Zoom
+     */
+    void stopZoom();
 
 
     /**
@@ -102,7 +121,7 @@ public interface IPreview {
      * 对 ITextureRenderer,Render 的增强, 拓展 matrix 功能
      *
      */
-    interface Renderer extends Render,IMatrixRender {
+    interface Renderer extends Render,IMatrixRender, IFilterAction {
 
         void setViewHeight(int viewHeight);
 
@@ -114,30 +133,17 @@ public interface IPreview {
         void setPrepareListener(ICameraDevice prepareListener);
 
         /**
-         * Filter是否同步到屏幕上
-         * @param isSync
+         * 设置缩放
+         * @param scale
          */
-        void setFilterSync(boolean isSync);
-
-        /**
-         * 新增一个Filter
-         * @param filter
-         */
-        void addFilter(IFBOFilter filter);
+        void setZoom(float scale);
 
 
         /**
-         * 移除一个Filter
-         * @param filter
+         * 停止Zoom
          */
-        void removeFilter(IFBOFilter filter);
+        void stopZoom();
 
-
-        /**
-         * 批量设置Filter
-         * @param filters
-         */
-        void setFilters(ArrayList<IFBOFilter> filters);
 
     }
 }

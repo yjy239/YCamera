@@ -20,12 +20,12 @@ public abstract class BaseCameraDevice implements ICameraDevice {
     protected int flashMode;
     protected int screenOrientationDegrees;
     protected int previewWidth, previewHeight;
-    protected CameraParam param;
+    protected CameraParam mParam;
 
     public BaseCameraDevice(CameraParam param ,
                             OnCameraReadyListener listener){
         this.listener = listener;
-        this.param = param;
+        this.mParam = param;
 
         if(param == null){
             throw new IllegalArgumentException("CameraParam couldn't be null");
@@ -36,10 +36,10 @@ public abstract class BaseCameraDevice implements ICameraDevice {
 
     @Override
     public void notifyFacingChanged() {
-        if (this.facing == param.getFacing()) {
+        if (this.facing == mParam.getFacing()) {
             return;
         }
-        this.facing = param.getFacing();
+        this.facing = mParam.getFacing();
         if (isCameraOpened()) {
             open();
         }
@@ -49,21 +49,21 @@ public abstract class BaseCameraDevice implements ICameraDevice {
     public void notifyAspectRatioChanged() {
         // Handle this later when camera is opened
         if (!isCameraOpened()) {
-            aspectRatio = param.getAspectRatio();
+            aspectRatio = mParam.getAspectRatio();
         }
         // if camera opened
-        if (!aspectRatio.equals(param.getAspectRatio())) {
-            aspectRatio = param.getAspectRatio();
+        if (!aspectRatio.equals(mParam.getAspectRatio())) {
+            aspectRatio = mParam.getAspectRatio();
             open();
         }
     }
 
     @Override
     public void notifyScreenOrientationChanged() {
-        if (this.screenOrientationDegrees == param.getScreenOrientationDegrees()) {
+        if (this.screenOrientationDegrees == mParam.getScreenOrientationDegrees()) {
             return;
         }
-        this.screenOrientationDegrees = param.getScreenOrientationDegrees();
+        this.screenOrientationDegrees = mParam.getScreenOrientationDegrees();
         if (isCameraOpened()) {
             open();
         }
@@ -71,12 +71,12 @@ public abstract class BaseCameraDevice implements ICameraDevice {
 
     @Override
     public void notifyDesiredSizeChanged() {
-        if (previewWidth == param.getDesiredSize().getWidth()
-                && previewHeight == param.getDesiredSize().getHeight()) {
+        if (previewWidth == mParam.getDesiredSize().getWidth()
+                && previewHeight == mParam.getDesiredSize().getHeight()) {
             return;
         }
-        previewWidth = param.getDesiredSize().getWidth();
-        previewHeight = param.getDesiredSize().getHeight();
+        previewWidth = mParam.getDesiredSize().getWidth();
+        previewHeight = mParam.getDesiredSize().getHeight();
         if (isCameraOpened()) {
             open();
         }

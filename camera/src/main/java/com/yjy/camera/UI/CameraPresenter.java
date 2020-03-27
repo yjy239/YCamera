@@ -66,24 +66,36 @@ public class CameraPresenter implements ICameraPresenter{
             if(mCameraView == null){
                 return;
             }
-            mCameraView.startPreview();
+            mCameraView.openCamera();
             isStart = true;
         }
 
     }
 
 
+    @Override
+    public void setSoftwareZoom(final boolean isSoftwareZoom) {
+        if(mCameraView == null){
+            mRunnables.add(new Runnable() {
+                @Override
+                public void run() {
+                    mCameraView.setSoftwareZoom(isSoftwareZoom);
+                }
+            });
+            return;
+        }
+        if(!mCameraView.isCameraOpened()){
+            mCameraView.setSoftwareZoom(isSoftwareZoom);
+        }
 
-
-
-
+    }
 
     public void stopCamera(){
         if(isStart){
             if(mCameraView == null){
                 return;
             }
-            mCameraView.stopPreview();
+            mCameraView.stopCamera();
             isStart = false;
         }
 
@@ -264,10 +276,40 @@ public class CameraPresenter implements ICameraPresenter{
         mCameraView.takePhoto(callback);
     }
 
+    @Override
+    public void setZoom(final float scale) {
+        if(mCameraView == null){
+            mRunnables.add(new Runnable() {
+                @Override
+                public void run() {
+                    mCameraView.setZoom(scale);
+                }
+            });
+            return;
+        }
+        mCameraView.setZoom(scale);
+    }
+
+    @Override
+    public void stopZoom() {
+        if(mCameraView == null){
+            return;
+        }
+        mCameraView.stopZoom();
+    }
+
+    @Override
+    public boolean isCameraOpened() {
+        if(mCameraView == null){
+            return false;
+        }
+        mCameraView.stopZoom();
+        return mCameraView.isCameraOpened();
+    }
 
     public void onDestroy(){
         if(mCameraView != null){
-            mCameraView.release();
+            mCameraView.onDestroy();
         }
 
         mContentView = null;
@@ -278,6 +320,7 @@ public class CameraPresenter implements ICameraPresenter{
         if(mCameraView == null){
             return;
         }
-        mCameraView.close();
+        mCameraView.closeCamera();
+        isStart = false;
     }
 }

@@ -18,6 +18,8 @@ public interface IFBOFilter {
 
     FrameDrawer getFrameDrawer();
 
+    boolean isInit();
+
     void onSurfaceCreated(int viewWidth, int viewHeight);
 
     void onSurfaceChanged(int width, int height);

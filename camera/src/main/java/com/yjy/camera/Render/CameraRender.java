@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -57,7 +59,7 @@ public class CameraRender extends BaseRender {
     private SurfaceTexture mSurfaceTexture;
 
     private int mTextureId =  Utils.GL_NOT_TEXTURE;
-    private ICameraDevice mPrepareListener;
+    private ICameraDevice mCameraDevice;
 
     private final float[] mOESTextureMatrix = new float[16];
 
@@ -81,7 +83,8 @@ public class CameraRender extends BaseRender {
     private boolean isInit = false;
 
 
-    private ArrayList<IFBOFilter> mFilters = new ArrayList<>();
+    private ArrayList<IFBOFilter> mReadyFilters = new ArrayList<>();
+    private ArrayList<IFBOFilter> mPrepareFilters = new ArrayList<>();
 
     private SurfaceTexture.OnFrameAvailableListener mFrameAvailableListener;
 
@@ -91,15 +94,7 @@ public class CameraRender extends BaseRender {
             if(!isSync&&isRead&&mCallback != null){
 
                 isRead = false;
-                getSurfaceBuffer(new SurfaceBufferCallback() {
-                    @Override
-                    public void callback(Size size,ByteBuffer buffer) {
-                        if(mCallback!=null){
-                            mCallback.takeCurrentBuffer(size,buffer);
-                        }
-
-                    }
-                });
+                getSurfaceBuffer();
 
             }
         }
@@ -130,22 +125,20 @@ public class CameraRender extends BaseRender {
         if(renders == null){
             return;
         }
-        mFilters = renders;
+        //mReadyFilters = renders;
+        mPrepareFilters = renders;
     }
 
     @Override
     public void addFilter(IFBOFilter renders) {
-        if(mFilters == null||renders == null){
+        if(mPrepareFilters == null||renders == null){
             return;
         }
-        if(mFilters.size() > 0){
-            mFilters.get(mFilters.size()-1).removeDrawEnd(getShotRunnable);
-        }
 
-        mFilters.add(renders);
+        mPrepareFilters.add(renders);
 
 
-        mFilters.get(mFilters.size()-1).addDrawEnd(getShotRunnable);
+        mPrepareFilters.get(mPrepareFilters.size()-1).addDrawEnd(getShotRunnable);
 
 
 
@@ -155,10 +148,10 @@ public class CameraRender extends BaseRender {
 
     @Override
     public void removeFilter(IFBOFilter renders) {
-        if(mFilters == null){
+        if(mReadyFilters == null){
             return;
         }
-        mFilters.remove(renders);
+        mReadyFilters.remove(renders);
     }
 
     @Override
@@ -171,7 +164,7 @@ public class CameraRender extends BaseRender {
 
     @Override
     public void setPrepareListener(ICameraDevice prepareListener) {
-        this.mPrepareListener = prepareListener;
+        this.mCameraDevice = prepareListener;
     }
 
 
@@ -180,6 +173,28 @@ public class CameraRender extends BaseRender {
     public void onEGLContextCreated() {
 
     }
+
+    @Override
+    public void setZoom(float scale) {
+        if(mDrawer != null){
+            if(scale > 0){
+                scale = 1/scale;
+                Log.e(TAG,"1/"+scale);
+                if(scale > 1){
+                    scale =1;
+                }
+                mDrawer.setScale(scale);
+            }
+
+        }
+
+    }
+
+    @Override
+    public void stopZoom() {
+        //不需要
+    }
+
 
     @Override
     public void setFilterSync(boolean sync) {
@@ -209,8 +224,8 @@ public class CameraRender extends BaseRender {
 
             //生成一个Surface
             mSurfaceTexture = new SurfaceTexture(mTextureId);
-            if(mPrepareListener != null){
-                mPrepareListener.onSurfacePrepare(mSurfaceTexture);
+            if(mCameraDevice != null){
+                mCameraDevice.onSurfacePrepare(mSurfaceTexture);
             }
 
 
@@ -220,8 +235,19 @@ public class CameraRender extends BaseRender {
             mOESFilter.onSurfaceCreated(mViewWidth,mViewHeight);
             Utils.checkGlError("onSurfaceCreated");
 
-            for(int i = 0; i< mFilters.size(); i++){
-                mFilters.get(i).onSurfaceCreated(mViewWidth,mViewHeight);
+            if(mPrepareFilters.size()>0){
+                mReadyFilters.addAll(mPrepareFilters);
+
+                if(mReadyFilters.size()>0){
+                    mReadyFilters.get(mReadyFilters.size()-1).addDrawEnd(getShotRunnable);
+                }
+
+                mPrepareFilters.clear();
+            }
+
+
+            for(int i = 0; i< mReadyFilters.size(); i++){
+                mReadyFilters.get(i).onSurfaceCreated(mViewWidth,mViewHeight);
             }
 
         }
@@ -247,14 +273,21 @@ public class CameraRender extends BaseRender {
         GLES20.glClearColor(0f, 0f, 0f, 0f);
         Utils.checkGlError("onSurfaceChanged");
 
-        mPrepareListener.changeSize(width,height);
+        mCameraDevice.changeSize(width,height);
         mOESFilter.onSurfaceChanged(width,height);
 
-        for(int i = 0; i< mFilters.size(); i++){
-            mFilters.get(i).onSurfaceChanged(width,height);
+        for(int i = 0; i< mReadyFilters.size(); i++){
+            mReadyFilters.get(i).onSurfaceChanged(width,height);
         }
 
         Utils.checkGlError("after onSurfaceCreated");
+
+
+
+
+
+
+
 
 
     }
@@ -267,6 +300,30 @@ public class CameraRender extends BaseRender {
         if(mDrawer==null||mDrawer.isError()){
             return;
         }
+
+
+        //说明Surface在运行过程中，有新的滤镜添加
+        if(mPrepareFilters.size()>0){
+            for(IFBOFilter filter : mPrepareFilters){
+                if(filter!=null&&!filter.isInit()){
+                    filter.onSurfaceCreated(mViewWidth,mViewHeight);
+                    filter.onSurfaceChanged(mViewWidth,mViewHeight);
+                }
+            }
+            //销毁上一次最后一个filter的绘制末尾监听
+            if(mReadyFilters.size() > 0){
+                mReadyFilters.get(mReadyFilters.size()-1).removeDrawEnd(getShotRunnable);
+            }
+
+            mReadyFilters.addAll(mPrepareFilters);
+
+            //添加本次最后filter的绘制监听
+            if(mReadyFilters.size()>0){
+                mReadyFilters.get(mReadyFilters.size()-1).addDrawEnd(getShotRunnable);
+            }
+            mPrepareFilters.clear();
+        }
+
 
 
 
@@ -296,8 +353,8 @@ public class CameraRender extends BaseRender {
         int textureId = oesTextureId;
 
         //不断的绘制
-        for(int i = 0; i< mFilters.size(); i++){
-            textureId = mFilters.get(i).onDrawFrame(textureId);
+        for(int i = 0; i< mReadyFilters.size(); i++){
+            textureId = mReadyFilters.get(i).onDrawFrame(textureId);
         }
 
 
@@ -308,19 +365,14 @@ public class CameraRender extends BaseRender {
             drawTextureToScreen(oesTextureId);
         }
 
-        if(isSync&&isRead&&mCallback != null){
+        boolean isSyncTake = isSync&&mReadyFilters.size()>0;
+        boolean nonFilter = mReadyFilters.size() == 0;
 
-            isRead = false;
-            getSurfaceBuffer(new SurfaceBufferCallback() {
-                @Override
-                public void callback(Size size,ByteBuffer buffer) {
-                    if(mCallback!=null){
-                        mCallback.takeCurrentBuffer(size,buffer);
-                    }
+        if(nonFilter&&isRead&&mCallback != null){
+            getSurfaceBuffer();
 
-                }
-            });
-
+        }else if(isSyncTake&&isRead&&mCallback != null){
+            getSurfaceBuffer();
         }
 
 
@@ -361,16 +413,17 @@ public class CameraRender extends BaseRender {
             mDrawer=null;
         }
 
-        for(int i = 0; i< mFilters.size(); i++){
-            mFilters.get(i).release();
+        for(int i = 0; i< mReadyFilters.size(); i++){
+            mReadyFilters.get(i).release();
         }
         if(mSurfaceTexture!=null){
             mSurfaceTexture.release();
             mSurfaceTexture = null;
         }
 
-        mFilters.clear();
-        mPrepareListener= null;
+        mPrepareFilters.clear();
+        mReadyFilters.clear();
+        mCameraDevice = null;
 
         mContext = null;
         isInit = false;
@@ -456,9 +509,10 @@ public class CameraRender extends BaseRender {
 
 
 
-    private void getSurfaceBuffer(final SurfaceBufferCallback callback) {
+    private void getSurfaceBuffer() {
 
 
+        isRead = false;
         //小于19使用最原始的方式
         //onBindFbo();
         //读取位置从 预览宽度 - 控件宽度
@@ -487,9 +541,11 @@ public class CameraRender extends BaseRender {
 
         Utils.reverseBuf(mBuffer,minWidth,minHeight);
         //onUnbindFbo();
-        if(callback != null){
-            callback.callback(new Size(minWidth,minHeight),mBuffer);
+
+        if(mCallback != null){
+            mCallback.takeCurrentBuffer(new Size(minWidth,minHeight),mBuffer);
         }
+
 
 
     }

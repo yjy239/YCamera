@@ -27,7 +27,54 @@ public class CameraParam {
     private int mFocusY = 0;
     private int mViewHeight = 0;
     private int mViewWidth = 0;
+    private float mZoom = HARDWARE_ZOOM_START;
 
+    private int mZoomSensitive = 3;
+
+    private boolean isSoftwareZoom = false;
+
+    public static final float TEXTURE_ZOOM_START = 1.0f;
+
+    public static final float HARDWARE_ZOOM_START = 0.0f;
+
+
+    /**
+     * 是否是软件模式Zoom
+     * @return
+     */
+    public boolean isSoftwareZoom() {
+        return isSoftwareZoom;
+    }
+
+    /**
+     * 设置软件Zoom
+     * @param softwareZoom
+     */
+    public void setSoftwareZoom(boolean softwareZoom) {
+        isSoftwareZoom = softwareZoom;
+        if(softwareZoom){
+            mZoom = TEXTURE_ZOOM_START;
+        }else {
+            mZoom = HARDWARE_ZOOM_START;
+        }
+
+    }
+
+    public int getZoomSensitive() {
+        return mZoomSensitive;
+    }
+
+    public void setZoomSensitive(int mZoomStep) {
+        this.mZoomSensitive = mZoomStep;
+    }
+
+    public float getZoom() {
+        return mZoom;
+    }
+
+    public void setZoom(float scale) {
+        this.mZoom = scale;
+    }
 
     public AspectRatio getAspectRatio() {
         return aspectRatio;

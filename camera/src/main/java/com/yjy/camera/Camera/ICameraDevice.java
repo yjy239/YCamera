@@ -59,6 +59,14 @@ public interface ICameraDevice  {
 
     void notifyDesiredSizeChanged();
 
+    void notifyZoomChanged();
+
+    float getZoom();
+
+    void stopZoom();
+
+    boolean isZoomSupport();
+
     void onSurfacePrepare(SurfaceTexture surfaceTexture);
 
     void changeSize(int width,int height);
