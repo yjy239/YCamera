@@ -71,6 +71,8 @@ public interface ICameraDevice  {
 
     void changeSize(int width,int height);
 
+    boolean isZoomable(float zoom);
+
     interface OnCameraReadyListener {
 
         void onCameraReady(@NonNull SurfaceTexture cameraTexture, @NonNull Size surfaceSize, int displayRotation);

@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.opengl.widget.Render;
 import com.yjy.opengl.widget.TakeBufferCallback;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
@@ -152,7 +153,7 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
 
     @NonNull
     @Override
-    public IMatrixRender getRenderer() {
+    public IPreview.Renderer getRenderer() {
 
         return mRender;
     }
@@ -220,6 +221,11 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
 
     @Override
     public void setZoom(@FloatRange(from = 0.0,to = 1.0)final float zoom) {
+        if(mCameraDevice == null||mRender == null){
+            return;
+        }
+
+
         postEvent(new Runnable() {
             @Override
             public void run() {
@@ -227,6 +233,7 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
                     if(mCameraDevice.isZoomSupport()&&!mParam.isSoftwareZoom()){
                         mCameraDevice.notifyZoomChanged();
                     }else {
+
                         mRender.setZoom(zoom);
                     }
 

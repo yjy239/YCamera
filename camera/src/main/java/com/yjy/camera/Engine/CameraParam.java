@@ -1,5 +1,6 @@
 package com.yjy.camera.Engine;
 
+import android.util.Log;
 import android.view.View;
 
 import com.yjy.camera.Filter.IFBOFilter;
@@ -20,21 +21,21 @@ import java.util.Iterator;
  * </pre>
  */
 public class CameraParam {
-    private AspectRatio aspectRatio = AspectRatio.DEFAULT;
-    private int facing;
-    private boolean autoFocus;
-    private int flashMode;
-    private int screenOrientationDegrees;
+    public AspectRatio aspectRatio = AspectRatio.DEFAULT;
+    public int facing;
+    public boolean autoFocus = true;
+    public int flashMode;
+    public int screenOrientationDegrees;
     boolean adjustViewBounds;
-    private Size desiredSize;
+    public Size desiredSize;
     private FocusListener mFocusCallback;
-    private int mFocusX = 0;
+    public int mFocusX = 0;
     private int mFocusY = 0;
     private int mViewHeight = 0;
     private int mViewWidth = 0;
-    private float mZoom = HARDWARE_ZOOM_START;
+    public float mZoom = HARDWARE_ZOOM_START;
 
-    private int mZoomSensitive = 3;
+    public int mZoomSensitive = 3;
 
     private boolean isSoftwareZoom = false;
 
@@ -42,7 +43,7 @@ public class CameraParam {
 
     public static final float HARDWARE_ZOOM_START = 0.0f;
 
-    private boolean isFilterSync = false;
+    public boolean isFilterSync = false;
 
     private ArrayList<WeakReference<IFBOFilter>> mFilters = new ArrayList<>();
 
@@ -111,6 +112,7 @@ public class CameraParam {
     }
 
     public void setZoom(float scale) {
+
         this.mZoom = scale;
     }
 
@@ -202,18 +204,15 @@ public class CameraParam {
     }
 
     public CameraParam copyTo(CameraParam cameraParam){
-        cameraParam.aspectRatio = aspectRatio;
-        cameraParam.facing = facing;
-        cameraParam.autoFocus = autoFocus;
-        cameraParam.flashMode = flashMode;
-        cameraParam.adjustViewBounds = adjustViewBounds;
-        cameraParam.mZoom = mZoom;
-        cameraParam.mZoomSensitive = mZoomSensitive;
-        cameraParam.isSoftwareZoom = isSoftwareZoom;
-        cameraParam.isFilterSync = isFilterSync;
-
-
-
+        cameraParam.aspectRatio = this.aspectRatio;
+        cameraParam.facing = this.facing;
+        cameraParam.autoFocus = this.autoFocus;
+        cameraParam.flashMode = this.flashMode;
+        cameraParam.adjustViewBounds = this.adjustViewBounds;
+        cameraParam.mZoom = this.mZoom;
+        cameraParam.mZoomSensitive = this.mZoomSensitive;
+        cameraParam.isSoftwareZoom = this.isSoftwareZoom;
+        cameraParam.isFilterSync = this.isFilterSync;
         return cameraParam;
     }
 

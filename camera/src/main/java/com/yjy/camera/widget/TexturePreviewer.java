@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 
@@ -103,7 +104,7 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
 
     @NonNull
     @Override
-    public IMatrixRender getRenderer() {
+    public IPreview.Renderer getRenderer() {
         return mRenderer;
     }
 
@@ -184,9 +185,13 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
 
     @Override
     public void setZoom(@FloatRange(from = 0.0,to = 1.0)final float zoom) {
+        if(mCameraDevice == null||mRenderer == null){
+            return;
+        }
         postEvent(new Runnable() {
             @Override
             public void run() {
+
                 if(mCameraDevice != null){
                     if(mCameraDevice.isZoomSupport()&&!mParam.isSoftwareZoom()){
                         mCameraDevice.notifyZoomChanged();

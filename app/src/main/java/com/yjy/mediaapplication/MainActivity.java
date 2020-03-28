@@ -170,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
 
         mCamera.setFilterSync(isSync);
 
-        mCamera.setSoftwareZoom(false);
     }
 
     public ArrayList<FilterModel> getData(){

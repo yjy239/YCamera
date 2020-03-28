@@ -175,19 +175,23 @@ public class CameraRender extends BaseRender {
     }
 
     @Override
-    public void setZoom(float scale) {
+    public void setZoom(float zoom) {
         if(mDrawer != null){
-            if(scale > 0){
-                scale = 1/scale;
-               // Log.e(TAG,"1/"+scale);
-                if(scale > 1){
-                    scale =1;
+            if(zoom > 0){
+                zoom = 1/zoom;
+                if(zoom > 1){
+                    zoom =1;
                 }
-                mDrawer.setScale(scale);
+                mDrawer.setScale(zoom);
             }
 
         }
 
+    }
+
+    @Override
+    public boolean isZoomable(float zoom) {
+        return zoom>0&&zoom<=99;
     }
 
     @Override

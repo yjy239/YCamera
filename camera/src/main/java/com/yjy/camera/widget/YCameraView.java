@@ -292,6 +292,9 @@ public class YCameraView extends FrameLayout
 
     @Override
     public void onDestroy() {
+        if(mCameraSurfaceView == null){
+            return;
+        }
         mCameraSurfaceView.release();
     }
 
@@ -299,6 +302,10 @@ public class YCameraView extends FrameLayout
     @Override
     public void onCameraReady(@NonNull SurfaceTexture cameraTexture,
                               @NonNull Size surfaceSize, int displayRotation) {
+        if(mCameraSurfaceView == null){
+            return;
+        }
+
         mCameraSurfaceView.getRenderer().resetMatrix();
         mCameraSurfaceView.getRenderer().rotate(displayRotation);
         mCameraSurfaceView.getRenderer().centerCrop(mScreenOrientationDetector.isLandscape(),
@@ -364,10 +371,25 @@ public class YCameraView extends FrameLayout
     }
 
     @Override
-    public void setZoom(float scale) {
+    public void setZoom(float zoom) {
         if(mDevice != null){
-            mParams.setZoom(scale);
-            mCameraSurfaceView.setZoom(scale);
+            //先校验硬件是否支持
+            if(mDevice.isZoomSupport()&&!mParams.isSoftwareZoom()){
+                //再校验硬件是否允许进行缩放
+                if(mDevice.isZoomable(zoom)){
+                    mParams.setZoom(zoom);
+                }else {
+                    return;
+                }
+            }else {
+                //校验软件是否允许Zoom
+                if(mCameraSurfaceView.getRenderer().isZoomable(zoom)){
+                    mParams.setZoom(zoom);
+                }else {
+                    return;
+                }
+            }
+            mCameraSurfaceView.setZoom(zoom);
         }
     }
 
@@ -438,6 +460,9 @@ public class YCameraView extends FrameLayout
     }
 
     public void setFilters(ArrayList<IFBOFilter> filters){
+        if(mCameraSurfaceView == null){
+            return;
+        }
         mCameraSurfaceView.setFilters(filters);
     }
 
@@ -448,7 +473,10 @@ public class YCameraView extends FrameLayout
      */
     public void setFlash(int flash) {
         mParams.setFlashMode(flash);
-        mDevice.notifyFlashModeChanged();
+        if(mDevice!=null){
+            mDevice.notifyFlashModeChanged();
+        }
+
     }
 
     /**
@@ -499,30 +527,11 @@ public class YCameraView extends FrameLayout
 
 
 
-
-
-
-
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-//        float offsetX = detector.getCurrentSpanX() - detector.getPreviousSpanX();
-//        float offsetY = detector.getCurrentSpanY() - detector.getPreviousSpanY();
-//        boolean isZoomOut = offsetY>0&&offsetX>0;
-//        boolean isZoomIn = offsetY<0&&offsetX<0;
-        float zoom = mZoomStart;
         float factor = detector.getScaleFactor() - 1;
-//        if(isZoomOut){
-//            zoom = mZoomStart + factor;
-//        }else if(isZoomIn){
-//            zoom = mZoomStart + factor;
-//        }
+        float zoom = mZoomStart + factor;
 
-        zoom = mZoomStart + factor;
-
-//        Log.e("offset","offsetX:"+offsetX+" offsetY: "
-//                +offsetY);
-//        Log.e("mZoomStart",""+mZoomStart+" zoom "
-//                +zoom+" factor:"+factor);
         setZoom(zoom);
         return false;
     }
@@ -545,7 +554,7 @@ public class YCameraView extends FrameLayout
             return;
         }
         mParams = cameraParams.copyTo(mParams);
-        
+
         ArrayList<WeakReference<IFBOFilter>> filters = cameraParams.getFilters();
         for(WeakReference<IFBOFilter> filter : filters){
             if(filter != null&&filter.get()!=null){
@@ -562,8 +571,6 @@ public class YCameraView extends FrameLayout
             mDevice.notifyFacingChanged();
             mDevice.notifyFlashModeChanged();
         }
-
-
 
 
     }

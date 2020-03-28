@@ -46,7 +46,7 @@ public interface IPreview  {
      * 设置 previewer 的渲染器
      */
     @NonNull
-    IMatrixRender getRenderer();
+    Renderer getRenderer();
 
     /**
      * 获取渲染器的尺寸
@@ -137,6 +137,9 @@ public interface IPreview  {
          * @param scale
          */
         void setZoom(float scale);
+
+
+        boolean isZoomable(float zoom);
 
 
         /**
