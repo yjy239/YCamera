@@ -15,6 +15,7 @@ import com.yjy.camera.Filter.ShaperFilter;
 import com.yjy.camera.Filter.SobelFilter;
 import com.yjy.camera.Filter.WaterFilter;
 import com.yjy.camera.UI.ICameraFragment;
+import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.camera.Utils.CameraUtils;
 import com.yjy.camera.widget.RecordButton;
 import com.yjy.mediaapplication.bean.FilterModel;
@@ -58,6 +59,15 @@ public class MainActivity extends AppCompatActivity {
         mMoreIv = findViewById(R.id.more_iv);
         mSyncIv = findViewById(R.id.sync_iv);
         mCamera = new CameraFragmentBuilder(this,R.id.camera_layout)
+                .setAspectRatio(AspectRatio.DEFAULT)
+                .setZoomSensitive(3)
+                .setAdjustViewBounds(true)
+                .setSoftwareZoom(false)
+                .setFlash(ICameraDevice.FLASH_OFF)
+                .setFilterSync(true)
+                .setFacing(ICameraDevice.FACING_BACK)
+                .setAutoFocus(true)
+                .asTexture()
                 .build();
         mButton = findViewById(R.id.btn);
         img = findViewById(R.id.image);

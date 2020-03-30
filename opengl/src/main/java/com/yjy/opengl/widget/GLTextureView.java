@@ -21,6 +21,7 @@ import com.yjy.opengl.core.IEGLCore;
 import com.yjy.opengl.core.LowEglCore;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGL10;
 
@@ -38,6 +39,7 @@ public class GLTextureView extends TextureView {
     protected ITextureRenderer mRenderer;
     protected RendererThread mRendererThread;
     private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
+    private ArrayList<Runnable> mPrepareRunnable = new ArrayList<>();
 
     public GLTextureView(Context context) {
         this(context, null);
@@ -60,6 +62,17 @@ public class GLTextureView extends TextureView {
                 mRendererThread = new RendererThread(RendererThread.class.getSimpleName(),
                         new WeakReference<>(GLTextureView.this));
                 mRendererThread.start();
+
+                if(mPrepareRunnable!=null&&mPrepareRunnable.size()>0){
+                    for(Runnable run : mPrepareRunnable){
+                        if(run != null){
+                            mRendererThread.mRendererHandler.post(run);
+                        }
+
+                    }
+
+                }
+
                 // invoke renderer lifecycle sequence.
                 if (mRenderer != null) {
                     mRendererThread.handleRendererChanged();
@@ -96,7 +109,12 @@ public class GLTextureView extends TextureView {
     }
 
     public void queueEvent(Runnable runnable){
-        mRendererThread.mRendererHandler.post(runnable);
+        if(mRendererThread != null){
+            mRendererThread.mRendererHandler.post(runnable);
+        }else {
+            mPrepareRunnable.add(runnable);
+        }
+
     }
 
     /**

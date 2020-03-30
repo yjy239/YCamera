@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.TextureView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -24,6 +26,7 @@ import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.R;
 import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.camera.UI.CameraType;
 import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.camera.Utils.ScreenOrientationDetector;
@@ -31,6 +34,9 @@ import com.yjy.opengl.util.Size;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import static com.yjy.camera.UI.CameraType.Surface;
+import static com.yjy.camera.UI.CameraType.Texture;
 
 /**
  * <pre>
@@ -58,6 +64,8 @@ public class YCameraView extends FrameLayout
 
 
     private ScaleGestureDetector mScaleGestureDetector;
+
+    private int mViewType = CameraType.Surface;
 
 
 
@@ -91,9 +99,9 @@ public class YCameraView extends FrameLayout
     private void parseAttr(Context context,AttributeSet attrs){
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.camera_view);
         //parse Camera Params
-        int type = typedArray.getInteger(R.styleable.camera_view_camera_type,0);
+        mViewType = typedArray.getInteger(R.styleable.camera_view_camera_type,0);
 
-        if(type == 1){
+        if(mViewType == Texture){
             this.mCameraSurfaceView = new TexturePreviewer(context,mParams,mDevice);
         }else {
             this.mCameraSurfaceView = new SurfacePreviewer(context,mParams,mDevice);
@@ -570,6 +578,46 @@ public class YCameraView extends FrameLayout
             mDevice.notifyAspectRatioChanged();
             mDevice.notifyFacingChanged();
             mDevice.notifyFlashModeChanged();
+        }
+
+        if(mParams.getViewType() != mViewType){
+            int count = this.getChildCount();
+            int replaceIndex = -1;
+            for(int i = 0;i<count;i++){
+                View child = this.getChildAt(i);
+                if(mViewType == Texture){
+                    if(child instanceof TexturePreviewer){
+                        replaceIndex = i;
+                        break;
+                    }
+                }else if(mViewType == Surface){
+                    if(child instanceof SurfacePreviewer){
+                        replaceIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if(replaceIndex < 0){
+                return;
+            }
+
+            if(mCameraSurfaceView != null){
+                removeView(mCameraSurfaceView.getView());
+                mCameraSurfaceView.release();
+            }
+
+            mViewType = mParams.getViewType();
+
+            if(mViewType == Texture){
+                this.mCameraSurfaceView = new TexturePreviewer(getContext(),mParams,mDevice);
+            }else {
+                this.mCameraSurfaceView = new SurfacePreviewer(getContext(),mParams,mDevice);
+            }
+
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            addView(mCameraSurfaceView.getView(),params);
         }
 
 

@@ -292,7 +292,7 @@ public class CameraOneDevice extends BaseCameraDevice {
                 double result =zoomStep*zoomFactor;
 
                 if(result < maxZooms&&result >=0){
-                   Log.e(TAG,"maxZoom:"+maxZooms+" zoomStep:"+zoomStep+" result:"+result);
+                   //Log.e(TAG,"maxZoom:"+maxZooms+" zoomStep:"+zoomStep+" result:"+result);
                     mCameraParams.setZoom((int)(result));
                     mCameraImpl.setParameters(mCameraParams);
                 }
@@ -310,7 +310,7 @@ public class CameraOneDevice extends BaseCameraDevice {
         float zoomFactor = maxZooms / mParam.getZoomSensitive();
         //float zoomStep = mParam.getZoom();
         double result = zoom*zoomFactor;
-        Log.e("isZoomable",""+zoom+" result:"+result+" zoomFactor:"+zoomFactor);
+        //Log.e("isZoomable",""+zoom+" result:"+result+" zoomFactor:"+zoomFactor);
         return isZoomSupport&&(result>=0&&result<maxZooms);
     }
 

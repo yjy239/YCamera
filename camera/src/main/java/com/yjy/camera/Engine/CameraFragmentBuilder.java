@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.UI.CameraFragment;
 import com.yjy.camera.UI.CameraSupportFragment;
+import com.yjy.camera.UI.CameraType;
 import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.UI.ICameraFragment;
 import com.yjy.camera.Utils.AspectRatio;
@@ -164,6 +165,16 @@ public class CameraFragmentBuilder  {
      */
     public CameraFragmentBuilder removeFilter(IFBOFilter filter){
         mCameraParam.removeFilters(filter);
+        return this;
+    }
+
+    public CameraFragmentBuilder asTexture(){
+        mCameraParam.setViewType(CameraType.Texture);
+        return this;
+    }
+
+    public CameraFragmentBuilder asSurface(){
+        mCameraParam.setViewType(CameraType.Surface);
         return this;
     }
 

@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.camera.UI.CameraType;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.opengl.util.Size;
 
@@ -23,27 +24,30 @@ import java.util.Iterator;
 public class CameraParam {
     public AspectRatio aspectRatio = AspectRatio.DEFAULT;
     public int facing;
-    public boolean autoFocus = true;
-    public int flashMode;
-    public int screenOrientationDegrees;
-    boolean adjustViewBounds;
-    public Size desiredSize;
+    private boolean autoFocus = true;
+    private int flashMode;
+    private int screenOrientationDegrees;
+    private boolean adjustViewBounds;
+    private Size desiredSize;
     private FocusListener mFocusCallback;
-    public int mFocusX = 0;
+    private int mFocusX = 0;
     private int mFocusY = 0;
     private int mViewHeight = 0;
     private int mViewWidth = 0;
-    public float mZoom = HARDWARE_ZOOM_START;
+    private float mZoom = HARDWARE_ZOOM_START;
+    private int mViewType;
 
-    public int mZoomSensitive = 3;
+    private int mZoomSensitive = 3;
 
     private boolean isSoftwareZoom = false;
 
-    public static final float TEXTURE_ZOOM_START = 1.0f;
+    private static final float TEXTURE_ZOOM_START = 1.0f;
 
-    public static final float HARDWARE_ZOOM_START = 0.0f;
+    private static final float HARDWARE_ZOOM_START = 0.0f;
 
-    public boolean isFilterSync = false;
+    private boolean isFilterSync = false;
+
+
 
     private ArrayList<WeakReference<IFBOFilter>> mFilters = new ArrayList<>();
 
@@ -75,6 +79,15 @@ public class CameraParam {
 
     public void setFilterSync(boolean filterSync) {
         isFilterSync = filterSync;
+    }
+
+
+    public int getViewType() {
+        return mViewType;
+    }
+
+    public void setViewType(@CameraType int viewType) {
+        this.mViewType = viewType;
     }
 
     /**
@@ -213,6 +226,7 @@ public class CameraParam {
         cameraParam.mZoomSensitive = this.mZoomSensitive;
         cameraParam.isSoftwareZoom = this.isSoftwareZoom;
         cameraParam.isFilterSync = this.isFilterSync;
+        cameraParam.mViewType = this.getViewType();
         return cameraParam;
     }
 
