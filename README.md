@@ -15,6 +15,7 @@ ICameraFragment mCamera = new CameraFragmentBuilder(this,R.id.camera_layout)
                 .setFilterSync(true)
                 .setFlash(ICameraDevice.FLASH_TORCH)
                 .setFacing(ICameraDevice.FACING_BACK)
+                .asSurface()
                 .setAutoFocus(true)
                 .build();
 ```
@@ -63,6 +64,24 @@ new WaterFilter(this,view,
 
 ### setFlash
 设置闪光灯效果。ICameraDevice.FLASH_TORCH 打开闪光灯，ICameraDevice.FLASH_OFF关闭闪光灯
+
+
+### asSurface
+YCamera以SurafceView为主体进行显示
+
+### asTexture
+YCamera以TextureView为主体进行显示
+
+### takePhoto
+```
+mCamera.takePhoto(new TakePhotoCallback() {
+                        @Override
+                        public void takePhoto(Bitmap bitmap) {
+                            img.setImageBitmap(bitmap);
+                        }
+                    });
+```
+将获得当前添加滤镜后的照片。
 
 
 ## 更多自定义
