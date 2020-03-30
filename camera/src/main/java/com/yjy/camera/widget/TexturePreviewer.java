@@ -86,6 +86,13 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
     }
 
     @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        mRenderer.setViewWidth(getWidth());
+        mRenderer.setViewHeight(getHeight());
+    }
+
+    @Override
     public void setRenderer(@NonNull Renderer renderer) {
         IMatrixRender before = mRenderer;
         // Copy transform matrix from before.

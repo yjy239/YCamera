@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 .setFilterSync(true)
                 .setFacing(ICameraDevice.FACING_BACK)
                 .setAutoFocus(true)
-                .asTexture()
+                .asSurface()
                 .build();
         mButton = findViewById(R.id.btn);
         img = findViewById(R.id.image);
