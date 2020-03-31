@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+
                 if(isStart){
                     mCamera.stopCamera();
                     mCamera.takePhoto(new TakePhotoCallback() {

@@ -9,11 +9,9 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -263,6 +261,21 @@ public class YCameraView extends FrameLayout
             return false;
         }
         return false;
+    }
+
+    @Override
+    public void postEvent(Runnable runnable) {
+        if(mCameraSurfaceView!=null){
+            mCameraSurfaceView.postEvent(runnable);
+        }
+    }
+
+    @Override
+    public void release(IFBOFilter filter) {
+        if(mCameraSurfaceView != null){
+            mCameraSurfaceView.release(filter);
+        }
+
     }
 
     @Override

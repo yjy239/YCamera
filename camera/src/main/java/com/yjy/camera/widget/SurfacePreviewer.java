@@ -12,7 +12,6 @@ import android.view.View;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Filter.IFBOFilter;
-import com.yjy.opengl.widget.Render;
 import com.yjy.opengl.widget.TakeBufferCallback;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
@@ -217,6 +216,18 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     public void release() {
         mRender.release();
         mCameraDevice = null;
+    }
+
+    @Override
+    public void release(final IFBOFilter filter) {
+        postEvent(new Runnable() {
+            @Override
+            public void run() {
+                if(filter != null ){
+                    filter.release();
+                }
+            }
+        });
     }
 
     @Override

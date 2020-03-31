@@ -73,6 +73,21 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
     }
 
 
+    @Override
+    public void postEvent(Runnable runnable) {
+        if(mPresenter!=null){
+            mPresenter.postEvent(runnable);
+        }
+    }
+
+    @Override
+    public void release(IFBOFilter filter) {
+        if(mPresenter!=null){
+            mPresenter.release(filter);
+        }
+    }
+
+
     public void openCamera(){
         if(Build.VERSION.SDK_INT >= 23){
             requestPermissions(new String[]{Manifest.permission.CAMERA},REQUEST_CODE);

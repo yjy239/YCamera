@@ -75,6 +75,19 @@ public class CameraFragment extends Fragment implements ICameraFragment {
         return mPresenter.getView(getActivity(),inflater,container,mType);
     }
 
+    @Override
+    public void postEvent(Runnable runnable) {
+        if(mPresenter!=null){
+            mPresenter.postEvent(runnable);
+        }
+    }
+
+    @Override
+    public void release(IFBOFilter filter) {
+        if(mPresenter!=null){
+            mPresenter.release(filter);
+        }
+    }
 
     public void openCamera(){
         if(Build.VERSION.SDK_INT >= 23){

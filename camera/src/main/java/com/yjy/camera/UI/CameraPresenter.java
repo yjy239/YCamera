@@ -27,6 +27,7 @@ import java.util.ArrayList;
  */
 public class CameraPresenter implements ICameraPresenter{
 
+
     private YCameraView mCameraView;
     public static final int REQUEST_CODE = 11;
     private View mContentView;
@@ -77,6 +78,11 @@ public class CameraPresenter implements ICameraPresenter{
         return mContentView;
     }
 
+    @Override
+    public void postEvent(Runnable runnable) {
+        mCameraView.postEvent(runnable);
+    }
+
     public void openCamera(){
         if(!isStart){
             if(mCameraView == null){
@@ -92,6 +98,11 @@ public class CameraPresenter implements ICameraPresenter{
 
     }
 
+
+    @Override
+    public void release(IFBOFilter filter) {
+
+    }
 
     @Override
     public void setSoftwareZoom(final boolean isSoftwareZoom) {

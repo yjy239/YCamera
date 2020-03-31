@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 
 
@@ -188,6 +187,18 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
     @Override
     public void release() {
         mRenderer.release();
+    }
+
+    @Override
+    public void release(final IFBOFilter filter) {
+        postEvent(new Runnable() {
+            @Override
+            public void run() {
+                if(filter != null ){
+                    filter.release();
+                }
+            }
+        });
     }
 
     @Override

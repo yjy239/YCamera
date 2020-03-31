@@ -3,6 +3,7 @@ package com.yjy.camera.UI;
 import android.support.annotation.NonNull;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
 
 /**
@@ -117,5 +118,15 @@ public interface ICameraAction {
     void onDestroy();
 
 
+    /**
+     * 设置是否是软件模拟缩放
+     * @param isSoftwareZoom
+     */
     void setSoftwareZoom(boolean isSoftwareZoom);
+
+
+    void postEvent(Runnable runnable);
+
+
+    void release(IFBOFilter filter);
 }

@@ -11,7 +11,6 @@ import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Filter.IFilterAction;
 import com.yjy.camera.Render.IMatrixRender;
-import com.yjy.camera.UI.ICameraAction;
 import com.yjy.opengl.util.Size;
 import com.yjy.opengl.core.EglContext;
 import com.yjy.opengl.widget.Render;
@@ -92,7 +91,13 @@ public interface IPreview  {
     void setFilterSync(boolean isSync);
 
     /**
-     * 释放
+     * 释放 filter
+     * @param filter
+     */
+    void release(IFBOFilter filter);
+
+    /**
+     * 释放所有资源
      */
     void release();
 

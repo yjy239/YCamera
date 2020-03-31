@@ -31,11 +31,12 @@ public class WaterFilter extends FBOFilter {
     private int mWaterVboId = Utils.GL_NOT_TEXTURE;
 
     private DynamicDrawable2D mDynamic2D = new DynamicDrawable2D();
-    private Bitmap bitmap;
+    private Bitmap mBitmap;
     private float mOffsetX;
     private float mOffsetY;
     private int mResId;
     private boolean isBottom;
+    private Thread mThread;
 
     public WaterFilter(Context context, @DrawableRes int resId, float offsetX, float offsetY){
         super(context);
@@ -49,7 +50,7 @@ public class WaterFilter extends FBOFilter {
         super(context);
         mOffsetX = offsetX;
         mOffsetY = offsetY;
-        this.bitmap = bitmap;
+        this.mBitmap = bitmap;
         this.isBottom = isBottom;
     }
 
@@ -70,10 +71,44 @@ public class WaterFilter extends FBOFilter {
         }
 
 
-        this.bitmap = CameraUtils.loadBitmapFromView(view);
+        this.mBitmap = CameraUtils.loadBitmapFromView(view);
         this.isBottom = isBottom;
     }
 
+
+
+
+    public void resetView(View view){
+        resetBitmap(CameraUtils.loadBitmapFromView(view));
+    }
+
+    public void resetBitmap(Bitmap bitmap){
+        if(mThread != Thread.currentThread()){
+            return;
+        }
+        if(mBitmap != null){
+            mBitmap.recycle();
+        }
+        mBitmap = bitmap;
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mWaterTextureId);
+        // 设置环绕方向
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+        // 设置纹理过滤方式
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        // 将 Bitmap 生成 2D 纹理
+
+
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
+        // 解绑
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
+        Utils.checkGlError("createTextureFromRes");
+
+
+    }
 
 
 
@@ -94,16 +129,16 @@ public class WaterFilter extends FBOFilter {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         // 将 Bitmap 生成 2D 纹理
-        if(bitmap==null){
-            bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
+        if(mBitmap ==null){
+            mBitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
         }
 
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
         // 解绑
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
         Utils.checkGlError("createTextureFromRes");
-        return bitmap;
+        return mBitmap;
     }
 
 
@@ -111,8 +146,8 @@ public class WaterFilter extends FBOFilter {
 
         float height = bitmap.getHeight();
         float width = bitmap.getWidth();
-        height = height * (1 / (float) surfaceHeight);
-        width = width * (1 / (float) surfaceWidth);
+        height = height * (2 / (float) surfaceHeight);
+        width = width * (2 / (float) surfaceWidth);
         PointF leftTop= new PointF(),leftBottom= new PointF(),
                 rightTop= new PointF(),rightBottom = new PointF();
         if(!isBottom){
@@ -132,7 +167,6 @@ public class WaterFilter extends FBOFilter {
             rightBottom.x= left + width;
             rightBottom.y = top - height;
 
-            mDynamic2D.setVertexBuffer(leftTop,leftBottom,rightTop,rightBottom);
         }else {
             float left = -1.0f+(mOffsetX /(float) surfaceWidth);
             float bottom = -1.0f+(mOffsetY /(float) surfaceHeight);
@@ -218,6 +252,7 @@ public class WaterFilter extends FBOFilter {
     @Override
     public void onSurfaceCreated(int viewWidth, int viewHeight) {
         super.onSurfaceCreated(viewWidth,viewHeight);
+        mThread = Thread.currentThread();
         initWaterVBO();
         Utils.checkGlError("onSurfaceCreated");
 
@@ -253,8 +288,8 @@ public class WaterFilter extends FBOFilter {
     @Override
     public void release() {
         super.release();
-        if(bitmap != null){
-            bitmap.recycle();
+        if(mBitmap != null){
+            mBitmap.recycle();
         }
         GLES20.glDeleteBuffers(1,new int[]{mWaterVboId},0);
         mWaterVboId= 0;
