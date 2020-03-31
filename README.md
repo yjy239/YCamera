@@ -1,7 +1,25 @@
-# YCamera
-关于相机相关的应用。可以自由添加，删除滤镜的Camera。
+# YCamera(关于相机相关的应用。可以自由添加，删除滤镜的Camera。目前还是在测试版本。慎用)
+
+[![](https://jitpack.io/v/yjy239/YCamera.svg)](https://jitpack.io/#yjy239/YCamera)
+
+
 
 # 使用：
+```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+
+dependencies {
+	        implementation 'com.github.yjy239.YCamera:camera:0.01'
+	}
+```
+  
+  
 ```
 ICameraFragment mCamera = new CameraFragmentBuilder(this,R.id.camera_layout)
                 .setAspectRatio(AspectRatio.DEFAULT)
