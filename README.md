@@ -6,6 +6,14 @@
 
 # 使用：
 ```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+
 dependencies {
 	        implementation 'com.github.yjy239.YCamera:camera:0.01'
 	}
