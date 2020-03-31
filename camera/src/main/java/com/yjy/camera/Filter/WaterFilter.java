@@ -79,17 +79,23 @@ public class WaterFilter extends FBOFilter {
 
 
     public void resetView(View view){
+        if(view.getMeasuredWidth() == 0||view.getMeasuredHeight()==0){
+            view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        }
         resetBitmap(CameraUtils.loadBitmapFromView(view));
     }
 
     public void resetBitmap(Bitmap bitmap){
-        if(mThread != Thread.currentThread()){
-            return;
-        }
         if(mBitmap != null){
             mBitmap.recycle();
         }
         mBitmap = bitmap;
+        //只有同一个线程才能切换
+        if(mThread != Thread.currentThread()){
+            return;
+        }
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mWaterTextureId);
         // 设置环绕方向

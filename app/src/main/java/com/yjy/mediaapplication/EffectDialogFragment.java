@@ -138,13 +138,13 @@ public class EffectDialogFragment extends DialogFragment {
                             if(mList.get(i).getFilter() instanceof WaterFilter){
                                 final WaterFilter filter = (WaterFilter) mList.get(i).getFilter();
                                 final TextView view = new TextView(mContext);
-                                view.setText("edit by yjy2333");
+                                view.setText("edit by yjy239");
                                 view.setTextSize(16);
                                 view.setTextColor(Color.BLACK);
+                                filter.resetView(view);
                                 mCamera.postEvent(new Runnable() {
                                     @Override
                                     public void run() {
-                                        filter.resetView(view);
                                         mCamera.addFilter(mList.get(i).getFilter());
                                     }
                                 });
