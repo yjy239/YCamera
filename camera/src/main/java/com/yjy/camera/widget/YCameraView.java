@@ -285,6 +285,7 @@ public class YCameraView extends FrameLayout
                 @Override
                 public void run() {
                     mDevice.open();
+                    notifyAllState();
                 }
             });
         }
@@ -570,6 +571,17 @@ public class YCameraView extends FrameLayout
         stopZoom();
     }
 
+
+    private void notifyAllState(){
+        if(mDevice != null){
+            mDevice.notifyAutoFocusChanged();
+            mDevice.notifyZoomChanged();
+            mDevice.notifyAspectRatioChanged();
+            mDevice.notifyFacingChanged();
+            mDevice.notifyFlashModeChanged();
+        }
+    }
+
     public void copyCameraParams(CameraParam cameraParams) {
         if(cameraParams ==null){
             return;
@@ -585,13 +597,7 @@ public class YCameraView extends FrameLayout
         }
         filters.clear();
 
-        if(mDevice != null){
-            mDevice.notifyAutoFocusChanged();
-            mDevice.notifyZoomChanged();
-            mDevice.notifyAspectRatioChanged();
-            mDevice.notifyFacingChanged();
-            mDevice.notifyFlashModeChanged();
-        }
+
 
         if(mParams.getViewType() != mViewType){
             int count = this.getChildCount();
@@ -632,6 +638,8 @@ public class YCameraView extends FrameLayout
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             addView(mCameraSurfaceView.getView(),params);
         }
+
+        notifyAllState();
 
 
     }
