@@ -309,7 +309,9 @@ public class YCameraView extends FrameLayout
         if(mDevice == null){
             return;
         }
+        mParams.reset();
         mDevice.close();
+
     }
 
     @Override
@@ -573,6 +575,18 @@ public class YCameraView extends FrameLayout
 
 
     private void notifyAllState(){
+        if(mDevice != null){
+            mDevice.notifyAutoFocusChanged();
+            mDevice.notifyZoomChanged();
+            mDevice.notifyAspectRatioChanged();
+            mDevice.notifyFacingChanged();
+            mDevice.notifyFlashModeChanged();
+        }
+    }
+
+
+    private void resetAllState(){
+        mParams.reset();
         if(mDevice != null){
             mDevice.notifyAutoFocusChanged();
             mDevice.notifyZoomChanged();

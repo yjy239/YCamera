@@ -3,8 +3,10 @@ package com.yjy.camera.Engine;
 import android.util.Log;
 import android.view.View;
 
+import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.UI.CameraType;
+import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.opengl.util.Size;
 
@@ -228,6 +230,28 @@ public class CameraParam {
         cameraParam.isFilterSync = this.isFilterSync;
         cameraParam.mViewType = this.getViewType();
         return cameraParam;
+    }
+
+    public void reset() {
+        mViewHeight = 0;
+        mViewWidth = 0;
+        mFocusX = 0;
+        mFocusY = 0;
+        mFocusCallback = null;
+
+        facing = ICameraDevice.FACING_BACK;
+        flashMode = ICameraDevice.FLASH_OFF;
+        adjustViewBounds = true;
+        mZoom = HARDWARE_ZOOM_START;
+        if(mViewType == CameraType.Surface){
+            mZoom = TEXTURE_ZOOM_START;
+        }else {
+            mZoom = HARDWARE_ZOOM_START;
+        }
+
+        isFilterSync = false;
+        mZoomSensitive = 3;
+
     }
 
 
