@@ -227,7 +227,13 @@ public class CameraRender extends BaseRender {
             mTextureId = mDrawer.createTextureObject();
 
             //生成一个Surface
-            mSurfaceTexture = new SurfaceTexture(mTextureId);
+            if(mSurfaceTexture == null){
+                mSurfaceTexture = new SurfaceTexture(mTextureId);
+            }else {
+                mSurfaceTexture.release();
+                mSurfaceTexture = new SurfaceTexture(mTextureId);
+            }
+
             if(mCameraDevice != null){
                 mCameraDevice.onSurfacePrepare(mSurfaceTexture);
             }

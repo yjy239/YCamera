@@ -20,6 +20,7 @@ import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.UI.ICameraFragment;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.opengl.gles.Program;
+import com.yjy.opengl.util.Utils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -159,6 +160,8 @@ public class CameraFragmentBuilder  {
     }
 
 
+
+
     /**
      * 移除一个Filter
      * @param filter
@@ -175,6 +178,17 @@ public class CameraFragmentBuilder  {
 
     public CameraFragmentBuilder asSurface(){
         mCameraParam.setViewType(CameraType.Surface);
+        return this;
+    }
+
+
+    /**
+     * 是否处于debug模式 openGL es 异常会报错退出
+     * @param isDebug
+     * @return
+     */
+    public CameraFragmentBuilder setDebug(boolean isDebug){
+        Utils.setDebug(isDebug);
         return this;
     }
 

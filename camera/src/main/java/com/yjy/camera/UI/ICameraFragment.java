@@ -19,7 +19,5 @@ public interface ICameraFragment extends IFilterAction,ICameraAction {
 
     View getView();
 
-
-
-
+    void setDebug(boolean isDebug);
 }

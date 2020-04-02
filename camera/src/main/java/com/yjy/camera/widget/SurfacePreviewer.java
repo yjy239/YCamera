@@ -29,6 +29,7 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
+import javax.microedition.khronos.opengles.GL;
 
 /**
  * <pre>
@@ -74,11 +75,8 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
                     if(mRender!=null){
                         mRender.setContext(getContext());
                         mRender.setPrepareListener(mCameraDevice);
-//                        if(!mRender.isInit()){
-//                            mRender.onSurfaceCreated(null,config);
-//                        }
-                    }
 
+                    }
                     result = egl.eglCreateWindowSurface(display, config, nativeWindow, null);
                 } catch (IllegalArgumentException e) {
                     // This exception indicates that the surface flinger surface
@@ -94,10 +92,6 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
 
             @Override
             public void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface) {
-//                if(mRender!=null){
-//                    mRender.release();
-//                }
-
                 egl.eglDestroySurface(display, surface);
             }
         });
@@ -268,5 +262,13 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
             }
 
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if(mRender != null){
+            mRender.release();
+        }
+        super.onDetachedFromWindow();
     }
 }

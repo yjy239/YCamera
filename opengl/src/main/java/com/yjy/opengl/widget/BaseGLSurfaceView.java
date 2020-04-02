@@ -10,10 +10,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.egl.EGLSurface;
-
-import static android.opengl.EGL14.EGL_CONTEXT_CLIENT_VERSION;
-import static javax.microedition.khronos.egl.EGL10.EGL_RED_SIZE;
 
 /**
  * <pre>

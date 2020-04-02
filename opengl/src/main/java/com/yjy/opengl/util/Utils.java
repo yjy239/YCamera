@@ -7,12 +7,17 @@ import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.yjy.opengl.widget.EGLLogWrapper;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.egl.EGL;
+import javax.microedition.khronos.opengles.GL;
 
 /**
  * <pre>
@@ -36,7 +41,7 @@ public class Utils {
 
     public static final String TAG = Utils.class.getName();
 
-    private static boolean isDebug = true;
+    private static boolean isDebug = false;
 
 
     //单位矩阵
@@ -170,9 +175,9 @@ public class Utils {
         if(!isDebug){
             return;
         }
-        int error = GLES10.glGetError();
+       int error = GLES10.glGetError();
         if (error != GLES10.GL_NO_ERROR) {
-            String msg = op + ": glError 0x0" + Integer.toHexString(error);
+            String msg = op + ": glError :" + EGLLogWrapper.getErrorString(error);
             Log.e(TAG, msg);
             throw new RuntimeException(msg);
         }

@@ -19,6 +19,7 @@ import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
+import com.yjy.opengl.util.Utils;
 
 import java.util.ArrayList;
 
@@ -308,5 +309,10 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
         }
 
         mPresenter.setFilters(filters);
+    }
+
+    @Override
+    public void setDebug(boolean isDebug) {
+        Utils.setDebug(isDebug);
     }
 }
