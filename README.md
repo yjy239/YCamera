@@ -15,7 +15,7 @@ allprojects {
 
 
 dependencies {
-	        implementation 'com.github.yjy239.YCamera:camera:0.01'
+	        implementation 'com.github.yjy239.YCamera:camera:0.04'
 	}
 ```
   
