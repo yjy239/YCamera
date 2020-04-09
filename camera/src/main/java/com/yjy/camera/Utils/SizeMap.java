@@ -73,6 +73,14 @@ public class SizeMap {
     }
 
 
+    public SortedSet<Size> allSizes() {
+        SortedSet<Size> set = new TreeSet<>();
+        for(HashMap.Entry<AspectRatio, SortedSet<Size>> s : mRatios.entrySet()){
+            set.addAll(s.getValue());
+        }
+        return set;
+    }
+
     public void clear() {
         mRatios.clear();
     }

@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 .setFlash(ICameraDevice.FLASH_OFF)
                 .setFilterSync(true)
                 .setFacing(ICameraDevice.FACING_BACK)
+                .setPreviewMaxSize(true)
                 .setAutoFocus(true)
                 .asSurface()
                 .build();

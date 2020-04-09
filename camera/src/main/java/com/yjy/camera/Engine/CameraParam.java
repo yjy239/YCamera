@@ -49,7 +49,15 @@ public class CameraParam {
 
     private boolean isFilterSync = false;
 
+    private boolean isPreviewMaxSize = false;
 
+    public boolean isPreviewMaxSize() {
+        return isPreviewMaxSize;
+    }
+
+    public void setPreviewMaxSize(boolean previewMaxSize) {
+        isPreviewMaxSize = previewMaxSize;
+    }
 
     private ArrayList<WeakReference<IFBOFilter>> mFilters = new ArrayList<>();
 
@@ -229,6 +237,7 @@ public class CameraParam {
         cameraParam.isSoftwareZoom = this.isSoftwareZoom;
         cameraParam.isFilterSync = this.isFilterSync;
         cameraParam.mViewType = this.getViewType();
+        cameraParam.isPreviewMaxSize = isPreviewMaxSize;
         return cameraParam;
     }
 
@@ -238,6 +247,7 @@ public class CameraParam {
         mFocusX = 0;
         mFocusY = 0;
         mFocusCallback = null;
+        isPreviewMaxSize = false;
 
         facing = ICameraDevice.FACING_BACK;
         flashMode = ICameraDevice.FLASH_OFF;

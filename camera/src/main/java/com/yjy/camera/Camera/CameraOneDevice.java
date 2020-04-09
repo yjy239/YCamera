@@ -187,10 +187,17 @@ public class CameraOneDevice extends BaseCameraDevice {
                 previewSizes = mPreviewSizes.sizes(chooseDefaultAspectRatio());
             }
             //找到最大的
+            Size previewSize = null;
 
             //Size previewSize = chooseOptimalPreviewSize(previewSizes);
-            Size previewSize = getOptimalSize(mCameraParams.getSupportedPreviewSizes(),mWidth,mHeight);
-            mCameraParams.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
+            if(!mParam.isPreviewMaxSize()){
+                previewSize = chooseOptimalPreviewSize(previewSizes);
+                mCameraParams.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
+            }else {
+                previewSize = findMaxPreviewSize(mPreviewSizes.allSizes());
+                mCameraParams.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
+            }
+
 
             //设置拍照比例
             mPictureSizes.clear();
@@ -389,6 +396,32 @@ public class CameraOneDevice extends BaseCameraDevice {
             // Iterate from small to large
             if (desiredWidth <= size.getWidth() && desiredHeight <= size.getHeight()) {
                 break;
+            }
+        }
+        return result;
+    }
+
+
+    private Size findMaxPreviewSize(SortedSet<Size> sizes) {
+        int desiredWidth;
+        int desiredHeight;
+        if (isLandscape()) {
+            desiredWidth = previewWidth;
+            desiredHeight = previewHeight;
+        } else {
+            desiredWidth = previewHeight;
+            desiredHeight = previewWidth;
+        }
+        Size result = null;
+        for (Size size : sizes) {
+            if(result==null){
+                result = size;
+            }
+
+            // Iterate from small to large
+            if (result.getHeight()<=size.getHeight()
+                    &&result.getWidth()<=size.getWidth()) {
+                result = size;
             }
         }
         return result;

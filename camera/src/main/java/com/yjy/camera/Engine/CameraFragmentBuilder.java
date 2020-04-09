@@ -160,6 +160,15 @@ public class CameraFragmentBuilder  {
     }
 
 
+    /**
+     * 直接查找最高分辨率的Size
+     */
+    public CameraFragmentBuilder setPreviewMaxSize(boolean isMax){
+        mCameraParam.setPreviewMaxSize(isMax);
+        return this;
+    }
+
+
 
 
     /**
@@ -180,6 +189,8 @@ public class CameraFragmentBuilder  {
         mCameraParam.setViewType(CameraType.Surface);
         return this;
     }
+
+
 
 
     /**
