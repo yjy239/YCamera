@@ -319,6 +319,7 @@ public class YCameraView extends FrameLayout
         if(mCameraSurfaceView == null){
             return;
         }
+        mDevice.close();
         mCameraSurfaceView.release();
     }
 
