@@ -270,18 +270,7 @@ public class CameraOneDevice extends BaseCameraDevice {
     @Override
     public void notifyZoomChanged() {
         if(mCameraImpl!=null){
-            if(isZoomSmooth&&mCameraImpl!=null){
-                int maxZooms = mCameraParams.getMaxZoom();
-                //先拿到0-1
-                //计算每一个step对应提升的Zoom范围
-                float zoomFactor = maxZooms / mParam.getZoomSensitive();
-                //当前提升多少步
-                float zoomStep = mParam.getZoom();
-
-                int result = Math.round(zoomStep*zoomFactor);
-
-                mCameraImpl.startSmoothZoom(result);
-            }else if(isZoomSupport&&mCameraImpl!=null){
+            if(isZoomSupport&&mCameraImpl!=null){
                 int maxZooms = mCameraParams.getMaxZoom();
                 //先拿到0-1
                 //计算每一个step对应提升的Zoom范围
@@ -292,12 +281,9 @@ public class CameraOneDevice extends BaseCameraDevice {
                 double result =zoomStep*zoomFactor;
 
                 if(result < maxZooms&&result >=0){
-                   //Log.e(TAG,"maxZoom:"+maxZooms+" zoomStep:"+zoomStep+" result:"+result);
                     mCameraParams.setZoom((int)(result));
                     mCameraImpl.setParameters(mCameraParams);
                 }
-
-
 
             }
         }
@@ -310,7 +296,7 @@ public class CameraOneDevice extends BaseCameraDevice {
         float zoomFactor = maxZooms / mParam.getZoomSensitive();
         //float zoomStep = mParam.getZoom();
         double result = zoom*zoomFactor;
-        //Log.e("isZoomable",""+zoom+" result:"+result+" zoomFactor:"+zoomFactor);
+        //Log.e("iszoomable",""+zoom+" result:"+result+" zoomFactor:"+zoomFactor);
         return isZoomSupport&&(result>=0&&result<maxZooms);
     }
 

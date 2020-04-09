@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-
                 if(isStart){
                     mCamera.stopCamera();
                     mCamera.takePhoto(new TakePhotoCallback() {

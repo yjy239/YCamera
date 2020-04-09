@@ -149,6 +149,8 @@ public class EffectDialogFragment extends DialogFragment {
                                     }
                                 });
 
+                            }else{
+                                mCamera.addFilter(mList.get(i).getFilter());
                             }
 
 
