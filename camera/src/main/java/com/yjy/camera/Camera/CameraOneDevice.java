@@ -194,7 +194,7 @@ public class CameraOneDevice extends BaseCameraDevice {
                 previewSize = chooseOptimalPreviewSize(previewSizes);
                 mCameraParams.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
             }else {
-                previewSize = findMaxPreviewSize(mPreviewSizes.allSizes());
+                previewSize = findMaxPreviewSize(previewSizes);
                 mCameraParams.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
             }
 
@@ -403,15 +403,6 @@ public class CameraOneDevice extends BaseCameraDevice {
 
 
     private Size findMaxPreviewSize(SortedSet<Size> sizes) {
-        int desiredWidth;
-        int desiredHeight;
-        if (isLandscape()) {
-            desiredWidth = previewWidth;
-            desiredHeight = previewHeight;
-        } else {
-            desiredWidth = previewHeight;
-            desiredHeight = previewWidth;
-        }
         Size result = null;
         for (Size size : sizes) {
             if(result==null){
