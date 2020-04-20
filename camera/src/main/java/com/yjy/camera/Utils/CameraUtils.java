@@ -37,4 +37,7 @@ public class CameraUtils {
         v.draw(canvas);// 将 view 画到画布上
         return screenshot;
     }
+
+
+
 }

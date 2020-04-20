@@ -20,6 +20,7 @@ import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
+import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.opengl.util.Utils;
 
 import java.util.ArrayList;
@@ -50,6 +51,10 @@ public class CameraFragment extends Fragment implements ICameraFragment {
         mPresenter.setCameraParams(cameraParams);
     }
 
+    @Override
+    public BitmapPool getBitmapPool() {
+        return mPresenter.getBitmapPool();
+    }
 
     @Override
     public void onAttach(Context context) {

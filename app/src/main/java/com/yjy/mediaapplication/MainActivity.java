@@ -17,6 +17,7 @@ import com.yjy.camera.Filter.WaterFilter;
 import com.yjy.camera.UI.ICameraFragment;
 import com.yjy.camera.Utils.AspectRatio;
 import com.yjy.camera.Utils.CameraUtils;
+import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.camera.widget.RecordButton;
 import com.yjy.mediaapplication.bean.FilterModel;
 
@@ -27,6 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isSync = false;
 
     private ArrayList<FilterModel> mDatas = new ArrayList<>();
+    private WeakReference<Bitmap> bitmapReference = new WeakReference<>(null);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +84,22 @@ public class MainActivity extends AppCompatActivity {
 
                 if(isStart){
                     mCamera.stopCamera();
+
                     mCamera.takePhoto(new TakePhotoCallback() {
                         @Override
                         public void takePhoto(Bitmap bitmap) {
                             img.setVisibility(View.VISIBLE);
                             mLayout.setVisibility(View.VISIBLE);
+                            if(bitmapReference.get() == null){
+                                bitmapReference = new WeakReference<>(bitmap);
 
-                            img.setImageBitmap(bitmap);
+                            }else {
+                                Bitmap previous = bitmapReference.get();
+                                BitmapPool pool = mCamera.getBitmapPool();
+                                pool.put(previous);
+                            }
+
+                            img.setImageBitmap(bitmapReference.get());
                         }
                     });
 

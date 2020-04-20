@@ -1,13 +1,13 @@
 package com.yjy.camera.Engine;
 
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.UI.CameraType;
-import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.Utils.AspectRatio;
+import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.opengl.util.Size;
 
 import java.lang.ref.WeakReference;
@@ -51,9 +51,22 @@ public class CameraParam {
 
     private boolean isPreviewMaxSize = false;
 
+    private BitmapPool mBitmapPool;
+
+    @NonNull
+    public BitmapPool getBitmapPool() {
+        return mBitmapPool;
+    }
+
+    public void setBitmapPool(BitmapPool mBitmapPool) {
+        this.mBitmapPool = mBitmapPool;
+    }
+
     public boolean isPreviewMaxSize() {
         return isPreviewMaxSize;
     }
+
+
 
     public void setPreviewMaxSize(boolean previewMaxSize) {
         isPreviewMaxSize = previewMaxSize;
@@ -238,6 +251,7 @@ public class CameraParam {
         cameraParam.isFilterSync = this.isFilterSync;
         cameraParam.mViewType = this.getViewType();
         cameraParam.isPreviewMaxSize = isPreviewMaxSize;
+        cameraParam.mBitmapPool = mBitmapPool;
         return cameraParam;
     }
 

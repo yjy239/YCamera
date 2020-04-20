@@ -12,6 +12,7 @@ import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.R;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
+import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.camera.widget.YCameraView;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class CameraPresenter implements ICameraPresenter{
     private CameraParam mCameraParams;
 
     private ArrayList<Runnable> mRunnables = new ArrayList<>();
+
+    private BitmapPool mPool;
 
 
     public void setCameraParams(CameraParam cameraParams) {
@@ -65,8 +68,10 @@ public class CameraPresenter implements ICameraPresenter{
         mCameraView = mContentView.findViewById(R.id.camera);
 
         if(mCameraParams != null){
-            mCameraView.copyCameraParams(mCameraParams);
+            mCameraView.copyCameraParams(activity,mCameraParams);
         }
+
+        mPool = mCameraParams.getBitmapPool();
 
 
         for(Runnable runnable : mRunnables){
@@ -76,6 +81,11 @@ public class CameraPresenter implements ICameraPresenter{
 
 
         return mContentView;
+    }
+
+    @Override
+    public BitmapPool getBitmapPool() {
+        return mPool;
     }
 
     @Override

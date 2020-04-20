@@ -597,11 +597,13 @@ public class YCameraView extends FrameLayout
         }
     }
 
-    public void copyCameraParams(CameraParam cameraParams) {
+    public void copyCameraParams(Context context,CameraParam cameraParams) {
         if(cameraParams ==null){
             return;
         }
         mParams = cameraParams.copyTo(mParams);
+
+
 
         ArrayList<WeakReference<IFBOFilter>> filters = cameraParams.getFilters();
         for(WeakReference<IFBOFilter> filter : filters){

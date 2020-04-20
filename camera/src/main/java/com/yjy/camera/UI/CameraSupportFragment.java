@@ -19,6 +19,7 @@ import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
+import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.opengl.util.Utils;
 
 import java.util.ArrayList;
@@ -314,5 +315,10 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
     @Override
     public void setDebug(boolean isDebug) {
         Utils.setDebug(isDebug);
+    }
+
+    @Override
+    public BitmapPool getBitmapPool() {
+        return mPresenter.getBitmapPool();
     }
 }

@@ -1,10 +1,13 @@
 package com.yjy.opengl.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.opengl.GLES10;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.util.Log;
 
 import com.yjy.opengl.widget.EGLLogWrapper;
@@ -15,6 +18,8 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 import javax.microedition.khronos.egl.EGL;
 import javax.microedition.khronos.opengles.GL;
@@ -210,8 +215,6 @@ public class Utils {
         GLES20.glBindTexture(textureType, texture);
         GLES20.glUniform1i(location, index);
     }
-
-
 
 
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Filter.IFilterAction;
+import com.yjy.camera.bitmap.BitmapPool;
 
 /**
  * <pre>
@@ -49,5 +50,9 @@ public interface ICameraPresenter extends IFilterAction,ICameraAction {
     void takePhoto(TakePhotoCallback callback);
 
 
-
+    /**
+     * 获取BitmapPool
+     * @return
+     */
+    BitmapPool getBitmapPool();
 }

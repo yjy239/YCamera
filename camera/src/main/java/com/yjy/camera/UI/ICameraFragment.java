@@ -3,6 +3,7 @@ package com.yjy.camera.UI;
 import android.view.View;
 
 import com.yjy.camera.Filter.IFilterAction;
+import com.yjy.camera.bitmap.BitmapPool;
 
 /**
  * <pre>
@@ -20,4 +21,6 @@ public interface ICameraFragment extends IFilterAction,ICameraAction {
     View getView();
 
     void setDebug(boolean isDebug);
+
+    BitmapPool getBitmapPool();
 }

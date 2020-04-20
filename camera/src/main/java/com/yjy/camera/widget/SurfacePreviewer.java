@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.opengl.widget.TakeBufferCallback;
 import com.yjy.camera.Camera.TakePhotoCallback;
 import com.yjy.camera.Engine.CameraParam;
@@ -29,7 +30,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
-import javax.microedition.khronos.opengles.GL;
 
 /**
  * <pre>
@@ -166,13 +166,13 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
                     @Override
                     public void takeCurrentBuffer(Size size,ByteBuffer bits) {
                         if(bits != null){
-                            final Bitmap bitmap = Bitmap.createBitmap(size.getWidth(), size.getHeight() , Bitmap.Config.ARGB_8888);
+                            BitmapPool pool = mParam.getBitmapPool();
+                            final Bitmap bitmap  = pool.get(size.getWidth(), size.getHeight() , Bitmap.Config.ARGB_8888);
                             bitmap.copyPixelsFromBuffer(bits);
                             mMainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     if(callback != null){
-
                                         callback.takePhoto(bitmap);
                                     }
                                 }

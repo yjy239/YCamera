@@ -2,28 +2,24 @@ package com.yjy.camera.Engine;
 
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewGroup;
 
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.UI.CameraFragment;
 import com.yjy.camera.UI.CameraSupportFragment;
 import com.yjy.camera.UI.CameraType;
-import com.yjy.camera.UI.ICameraAction;
 import com.yjy.camera.UI.ICameraFragment;
 import com.yjy.camera.Utils.AspectRatio;
-import com.yjy.opengl.gles.Program;
+import com.yjy.camera.bitmap.BitmapPool;
+import com.yjy.camera.bitmap.LruBitmapPool;
+import com.yjy.camera.bitmap.MemorySizeCalculator;
 import com.yjy.opengl.util.Utils;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 /**
  * <pre>
@@ -191,6 +187,11 @@ public class CameraFragmentBuilder  {
     }
 
 
+    public CameraFragmentBuilder setBitmapPool(@NonNull BitmapPool bitmapPool){
+        mCameraParam.setBitmapPool(bitmapPool);
+        return this;
+    }
+
 
 
     /**
@@ -205,6 +206,12 @@ public class CameraFragmentBuilder  {
 
 
     public ICameraFragment build(){
+        if(mCameraParam.getBitmapPool() == null){
+            MemorySizeCalculator calculator = new MemorySizeCalculator(mAppCompatActivity.get() != null
+                    ?mAppCompatActivity.get():mActivity.get());
+            mCameraParam.setBitmapPool(new LruBitmapPool(calculator.getBitmapPoolSize()));
+        }
+
         if(mAppCompatActivity.get() != null){
             return init(mAppCompatActivity.get(),mResId);
         }else if(mActivity.get() != null){
@@ -219,6 +226,7 @@ public class CameraFragmentBuilder  {
         CameraFragment cameraFragment = (CameraFragment)manager.findFragmentByTag(FRAGMENT_ID);
 
 
+
         if(cameraFragment == null){
             cameraFragment = new CameraFragment();
             cameraFragment.setCameraParams(mCameraParam);
@@ -229,6 +237,7 @@ public class CameraFragmentBuilder  {
             manager.beginTransaction()
                     .replace(viewGroup,cameraFragment,FRAGMENT_ID).commit();
         }
+        mCameraParam = null;
 
         return (ICameraFragment)cameraFragment;
     }
