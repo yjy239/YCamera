@@ -223,6 +223,8 @@ public class CameraOneDevice extends BaseCameraDevice {
 
             isZoomSmooth = mCameraParams.isSmoothZoomSupported();
 
+
+
             //闪光模式
             setFlashMode(flashMode);
 
@@ -289,7 +291,12 @@ public class CameraOneDevice extends BaseCameraDevice {
 
                 if(result < maxZooms&&result >=0){
                     mCameraParams.setZoom((int)(result));
-                    mCameraImpl.setParameters(mCameraParams);
+                    try {
+                        mCameraImpl.setParameters(mCameraParams);
+                    }catch (RuntimeException e){
+                        e.printStackTrace();
+                    }
+
                 }
 
             }
@@ -469,6 +476,9 @@ public class CameraOneDevice extends BaseCameraDevice {
      * 设置自动聚焦
      */
     private void setAutoFocus(boolean autoFocus) {
+        if(mCameraParams == null){
+            return;
+        }
         List<String> modes = mCameraParams.getSupportedFocusModes();
         if(autoFocus&& modes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
             //连续对焦
@@ -526,7 +536,7 @@ public class CameraOneDevice extends BaseCameraDevice {
         parameters.setMeteringAreas(focusAreas);
         try {
             mCameraImpl.setParameters(parameters);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
@@ -551,7 +561,7 @@ public class CameraOneDevice extends BaseCameraDevice {
 
         try {
             mCameraImpl.setParameters(parameters);
-        }catch (Exception e){
+        }catch (RuntimeException e){
             e.printStackTrace();
         }
     }
@@ -569,7 +579,12 @@ public class CameraOneDevice extends BaseCameraDevice {
         if(autoFocus){
             //是允许自动对焦
             setAutoFocus(autoFocus);
-            mCameraImpl.setParameters(mCameraParams);
+            try {
+                mCameraImpl.setParameters(mCameraParams);
+            }catch (RuntimeException e){
+                e.printStackTrace();
+            }
+
         }else{
             //不自动对焦则
             if (mIsFocusing
@@ -605,7 +620,12 @@ public class CameraOneDevice extends BaseCameraDevice {
             }
             // resetMatrix params
             if (setFlashMode(mParam.getFlashMode())) {
-                mCameraImpl.setParameters(mCameraParams);
+                try {
+                    mCameraImpl.setParameters(mCameraParams);
+                }catch (RuntimeException e){
+                    e.printStackTrace();
+                }
+
             }
         }
         // not previewing

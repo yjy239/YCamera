@@ -122,10 +122,10 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
 
     @Override
     public void takePhoto(final TakePhotoCallback callback) {
+        final Bitmap bitmap = getBitmap();
         postEvent(new Runnable() {
             @Override
             public void run() {
-                final Bitmap bitmap = getBitmap();
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
