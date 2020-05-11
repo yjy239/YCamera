@@ -356,17 +356,24 @@ public class CameraPresenter implements ICameraPresenter{
                     }
                 }
 
-                mCameraView.takePhoto(new TakePhotoCallback() {
+                mCameraView.postDelayed(new Runnable() {
                     @Override
-                    public void takePhoto(Bitmap bitmap) {
-                        mPreFlashImg.setVisibility(View.GONE);
-                        CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
-                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
-                        if(callback != null){
-                            callback.takePhoto(bitmap);
-                        }
+                    public void run() {
+                        mCameraView.takePhoto(new TakePhotoCallback() {
+                            @Override
+                            public void takePhoto(Bitmap bitmap) {
+                                mPreFlashImg.setVisibility(View.GONE);
+                                CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                                        WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+                                if(callback != null){
+                                    callback.takePhoto(bitmap);
+                                }
+                            }
+                        });
                     }
-                });
+                },DELAY);
+
+
             }
         });
     }
@@ -400,18 +407,25 @@ public class CameraPresenter implements ICameraPresenter{
 
                 }
 
-                mCameraView.takePhoto(name,new TakePhotoFileCallback(){
-
+                mCameraView.postDelayed(new Runnable() {
                     @Override
-                    public void takePhoto(String path) {
-                        mPreFlashImg.setVisibility(View.GONE);
-                        CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
-                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
-                        if(callback != null){
-                            callback.takePhoto(path);
-                        }
+                    public void run() {
+                        mCameraView.takePhoto(name,new TakePhotoFileCallback(){
+
+                            @Override
+                            public void takePhoto(String path) {
+                                mPreFlashImg.setVisibility(View.GONE);
+                                CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                                        WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+                                if(callback != null){
+                                    callback.takePhoto(path);
+                                }
+                            }
+                        });
                     }
-                });
+                },DELAY);
+
+
             }
         });
 
