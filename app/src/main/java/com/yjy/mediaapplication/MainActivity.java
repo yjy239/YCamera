@@ -1,12 +1,17 @@
 package com.yjy.mediaapplication;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Engine.CameraFragmentBuilder;
 import com.yjy.camera.Filter.BlackWhiteFilter;
 import com.yjy.camera.Filter.BlurFilter;
@@ -22,11 +27,15 @@ import com.yjy.camera.widget.RecordButton;
 import com.yjy.mediaapplication.bean.FilterModel;
 
 
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -46,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean front = false;
     private ImageView mMoreIv;
     private ImageView mSyncIv;
+    private ImageView mBack;
 
     private EffectDialogFragment mDialog;
     private static final String TAG = MainActivity.class.getName();
@@ -61,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mMoreIv = findViewById(R.id.more_iv);
         mSyncIv = findViewById(R.id.sync_iv);
+        mBack = findViewById(R.id.back_iv);
         mCamera = new CameraFragmentBuilder(this,R.id.camera_layout)
                 .setAspectRatio(AspectRatio.DEFAULT)
                 .setZoomSensitive(3)
@@ -70,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
                 .setFilterSync(true)
                 .setFacing(ICameraDevice.FACING_BACK)
                 .setPreviewMaxSize(true)
+                .setSaveDir(Environment.getExternalStorageDirectory() + "/camera/images/waterImages/")
+                .setAuthority("com.yjy.camera")
                 .setAutoFocus(true)
                 .asSurface()
                 .build();
@@ -78,43 +91,24 @@ public class MainActivity extends AppCompatActivity {
         mFlashIv = findViewById(R.id.flash_iv);
         mFaceIv = findViewById(R.id.face_iv);
         mLayout = findViewById(R.id.content);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(isStart){
-                    mCamera.stopCamera();
-
-                    mCamera.takePhoto(new TakePhotoCallback() {
-                        @Override
-                        public void takePhoto(Bitmap bitmap) {
-                            img.setVisibility(View.VISIBLE);
-                            mLayout.setVisibility(View.VISIBLE);
-                            if(bitmapReference.get() == null){
-                                bitmapReference = new WeakReference<>(bitmap);
-
-                            }else {
-                                Bitmap previous = bitmapReference.get();
-                                BitmapPool pool = mCamera.getBitmapPool();
-                                pool.put(previous);
-                            }
-
-                            img.setImageBitmap(bitmapReference.get());
-                        }
-                    });
-
-                    isStart = false;
+                if(Build.VERSION.SDK_INT >= 23){
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_CODE);
                 }else {
-                    openCamera();
-                    img.setVisibility(View.GONE);
-                    mLayout.setVisibility(View.GONE);
-                    isStart = true;
-
+                    showPic();
                 }
-
 
             }
         });
+
 
         isStart = true;
 
@@ -124,7 +118,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 flash = !flash;
-                mCamera.setFlash(flash? ICameraDevice.FLASH_TORCH:ICameraDevice.FLASH_OFF);
+                if(flash){
+                    mCamera.setFlash(!front? ICameraDevice.FLASH_TORCH:ICameraDevice.FLASH_FRONT);
+                }else {
+                    mCamera.setFlash(ICameraDevice.FLASH_OFF);
+                }
+
                 if(!flash){
                     mFlashIv.setImageResource(R.drawable.ic_close_flash);
                 }else {
@@ -194,6 +193,65 @@ public class MainActivity extends AppCompatActivity {
 
         mCamera.setFilterSync(isSync);
 
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQUEST_CODE){
+            if(permissions.length>0&&  Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])){
+                if (grantResults.length > 0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                    showPic();
+                }
+            }
+        }
+    }
+
+    private void showPic(){
+        if(isStart){
+            mCamera.stopCamera();
+
+//                    mCamera.takePhoto(new TakePhotoCallback() {
+//                        @Override
+//                        public void takePhoto(Bitmap bitmap) {
+//                            img.setVisibility(View.VISIBLE);
+//                            mLayout.setVisibility(View.VISIBLE);
+//                            if(bitmapReference.get() == null){
+//                                bitmapReference = new WeakReference<>(bitmap);
+//
+//                            }else {
+//                                Bitmap previous = bitmapReference.get();
+//                                BitmapPool pool = mCamera.getBitmapPool();
+//                                pool.put(previous);
+//                            }
+//
+//                            img.setImageBitmap(bitmapReference.get());
+//                        }
+//                    });
+
+            isStart = false;
+
+            mCamera.takePhoto("" + System.currentTimeMillis(), new TakePhotoFileCallback() {
+                @Override
+                public void takePhoto(String path) {
+                    img.setVisibility(View.VISIBLE);
+                    mLayout.setVisibility(View.VISIBLE);
+                    Log.e("path","path:"+path);
+                    Glide.with(MainActivity.this)
+                            .load(path)
+                            .into(img);
+                }
+            });
+
+
+        }else {
+            openCamera();
+            img.setVisibility(View.GONE);
+            mLayout.setVisibility(View.GONE);
+            isStart = true;
+
+        }
     }
 
     public ArrayList<FilterModel> getData(){

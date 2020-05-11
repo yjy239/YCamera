@@ -23,6 +23,9 @@ import com.yjy.opengl.util.Utils;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -81,6 +84,7 @@ public class CameraRender extends BaseRender {
 
 
     private boolean isInit = false;
+    private Lock mReleaseLock = new ReentrantLock();
 
 
     private ArrayList<IFBOFilter> mReadyFilters = new ArrayList<>();
@@ -215,6 +219,8 @@ public class CameraRender extends BaseRender {
         if(isInit){
             return;
         }
+        mReleaseLock.lock();
+
         if(mDrawer == null){
             mTextureProgram = new Texture2DProgram(mContext,Texture2DProgram.TEXTURE_2D);
             mTextureProgram.create();
@@ -267,6 +273,8 @@ public class CameraRender extends BaseRender {
 
         Utils.checkGlError("onSurfaceCreated");
 
+        mReleaseLock.unlock();
+
     }
 
     @Override
@@ -276,6 +284,7 @@ public class CameraRender extends BaseRender {
             return;
         }
         //区域发生变换
+        mReleaseLock.lock();
 
         //重新设定Surface的渲染区域
         GLES20.glViewport(0, 0, width, height);
@@ -293,11 +302,7 @@ public class CameraRender extends BaseRender {
         Utils.checkGlError("after onSurfaceCreated");
 
 
-
-
-
-
-
+        mReleaseLock.unlock();
 
 
     }
@@ -311,6 +316,7 @@ public class CameraRender extends BaseRender {
             return;
         }
 
+        mReleaseLock.lock();
 
         //说明Surface在运行过程中，有新的滤镜添加
         if(mPrepareFilters.size()>0){
@@ -339,6 +345,7 @@ public class CameraRender extends BaseRender {
 
        drawScreenThroughFBO();
 
+        mReleaseLock.unlock();
     }
 
     /**
@@ -404,6 +411,13 @@ public class CameraRender extends BaseRender {
 
     @Override
     public void release() {
+        //等待执行绘制线程完毕
+        try{
+            mReleaseLock.wait();
+        }catch (Exception e){
+
+        }
+
         //释放
         if(mOESFilter !=null){
             mOESFilter.release();

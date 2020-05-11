@@ -1,5 +1,6 @@
 package com.yjy.camera.Engine;
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -52,6 +53,18 @@ public class CameraParam {
     private boolean isPreviewMaxSize = false;
 
     private BitmapPool mBitmapPool;
+
+    private String mSaveDir;
+    private int quality = 100;
+    private String authority;
+
+    public String getSaveDir() {
+        return mSaveDir;
+    }
+
+    public void setSaveDir(String mSaveDir) {
+        this.mSaveDir = mSaveDir;
+    }
 
     @NonNull
     public BitmapPool getBitmapPool() {
@@ -252,6 +265,9 @@ public class CameraParam {
         cameraParam.mViewType = this.getViewType();
         cameraParam.isPreviewMaxSize = isPreviewMaxSize;
         cameraParam.mBitmapPool = mBitmapPool;
+        cameraParam.mSaveDir = mSaveDir;
+        cameraParam.authority = authority;
+        cameraParam.quality = quality;
         return cameraParam;
     }
 
@@ -276,6 +292,22 @@ public class CameraParam {
         isFilterSync = false;
         mZoomSensitive = 3;
 
+    }
+
+    public int getQuality() {
+        return quality;
+    }
+
+    public void setQuality(int quality) {
+        this.quality = quality;
+    }
+
+    public String getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(String authority) {
+        this.authority = authority;
     }
 
 

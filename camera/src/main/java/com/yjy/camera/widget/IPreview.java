@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Filter.IFilterAction;
 import com.yjy.camera.Render.IMatrixRender;
@@ -57,6 +58,12 @@ public interface IPreview  {
      * 获取当前帧的数据
      */
     void takePhoto(TakePhotoCallback callback);
+
+
+    /**
+     * 获取当前帧的保存的文件
+     */
+    void takePhoto(String name,TakePhotoFileCallback callback);
 
     /**
      * 获取当前的渲染环境

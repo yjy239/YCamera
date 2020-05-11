@@ -6,6 +6,8 @@ import android.os.Build;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * <pre>
@@ -83,5 +85,19 @@ public class Utils {
                 bytesPerPixel = 4;
         }
         return bytesPerPixel;
+    }
+
+
+    private static volatile ExecutorService sCachedThreadPool;
+
+    public static void execute(Runnable task) {
+        if (sCachedThreadPool == null) {
+            synchronized (Utils.class) {
+                if (sCachedThreadPool == null) {
+                    sCachedThreadPool = Executors.newCachedThreadPool();
+                }
+            }
+        }
+        sCachedThreadPool.execute(task);
     }
 }

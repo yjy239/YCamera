@@ -3,10 +3,12 @@ package com.yjy.camera.Engine;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.os.Environment;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.UI.CameraFragment;
@@ -165,6 +167,22 @@ public class CameraFragmentBuilder  {
     }
 
 
+    /**
+     * 设置 fileprovider 的权限
+     * @param authority
+     * @return
+     */
+    public CameraFragmentBuilder setAuthority(String authority){
+        mCameraParam.setAuthority(authority);
+        return this;
+    }
+
+
+    public CameraFragmentBuilder setQuality(int quality){
+        mCameraParam.setQuality(quality);
+        return this;
+    }
+
 
 
     /**
@@ -193,6 +211,10 @@ public class CameraFragmentBuilder  {
     }
 
 
+    public CameraFragmentBuilder setSaveDir(String name){
+        mCameraParam.setSaveDir(name);
+        return this;
+    }
 
     /**
      * 是否处于debug模式 openGL es 异常会报错退出
@@ -212,9 +234,22 @@ public class CameraFragmentBuilder  {
             mCameraParam.setBitmapPool(new LruBitmapPool(calculator.getBitmapPoolSize()));
         }
 
+
+
         if(mAppCompatActivity.get() != null){
+            Activity activity = mAppCompatActivity.get();
+            if(TextUtils.isEmpty(mCameraParam.getSaveDir())){
+
+                mCameraParam.setSaveDir(activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                        .getAbsolutePath()+"/images");
+            }
             return init(mAppCompatActivity.get(),mResId);
         }else if(mActivity.get() != null){
+            Activity activity = mActivity.get();
+            if(TextUtils.isEmpty(mCameraParam.getSaveDir())){
+                mCameraParam.setSaveDir(activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                        .getAbsolutePath()+"/images");
+            }
             return init(mActivity.get(),mResId);
         }
         return null;

@@ -31,6 +31,7 @@ public interface ICameraDevice  {
     int FLASH_TORCH = 2;
     int FLASH_AUTO = 3;
     int FLASH_RED_EYE = 4;
+    int FLASH_FRONT = 5;
 
     /**
      * Constants of orientation

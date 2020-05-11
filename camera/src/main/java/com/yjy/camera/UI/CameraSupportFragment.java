@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
@@ -276,6 +277,20 @@ public class CameraSupportFragment extends Fragment implements ICameraFragment {
     public void takePhoto(final TakePhotoCallback callback){
         if(mPresenter != null){
             mPresenter.takePhoto(callback);
+        }
+    }
+
+    @Override
+    public void takePhoto(String name, TakePhotoFileCallback callback) {
+        if(mPresenter != null){
+            mPresenter.takePhoto(name,callback);
+        }
+    }
+
+    @Override
+    public void setSavePhotoDir(String name) {
+        if(mPresenter != null){
+            mPresenter.setSavePhotoDir(name);
         }
     }
 

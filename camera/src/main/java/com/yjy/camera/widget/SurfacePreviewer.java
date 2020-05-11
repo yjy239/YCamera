@@ -11,7 +11,10 @@ import android.view.View;
 
 
 import com.yjy.camera.Camera.ICameraDevice;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Filter.IFBOFilter;
+import com.yjy.camera.Utils.CameraUtils;
+import com.yjy.camera.Utils.Utils;
 import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.opengl.widget.TakeBufferCallback;
 import com.yjy.camera.Camera.TakePhotoCallback;
@@ -169,6 +172,7 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
                             BitmapPool pool = mParam.getBitmapPool();
                             final Bitmap bitmap  = pool.get(size.getWidth(), size.getHeight() , Bitmap.Config.ARGB_8888);
                             bitmap.copyPixelsFromBuffer(bits);
+                            bits.clear();
                             mMainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -177,6 +181,43 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
                                     }
                                 }
                             });
+
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+    @Override
+    public void takePhoto(final String name,final TakePhotoFileCallback callback) {
+        postEvent(new Runnable() {
+            @Override
+            public void run() {
+                mRender.takeSurfaceBuffer(new TakeBufferCallback() {
+                    @Override
+                    public void takeCurrentBuffer(Size size,ByteBuffer bits) {
+                        if(bits != null){
+                            BitmapPool pool = mParam.getBitmapPool();
+                            final Bitmap bitmap  = pool.get(size.getWidth(), size.getHeight() , Bitmap.Config.ARGB_8888);
+                            bitmap.copyPixelsFromBuffer(bits);
+                            bits.clear();
+                            Utils.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final String path = CameraUtils.savePhoto(getContext(),bitmap,mParam,name);
+                                    mMainHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(callback!=null){
+                                                callback.takePhoto(path);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
 
                         }
                     }
@@ -208,8 +249,14 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
 
     @Override
     public void release() {
-        mRender.release();
-        mCameraDevice = null;
+        postEvent(new Runnable() {
+            @Override
+            public void run() {
+                mRender.release();
+                mCameraDevice = null;
+            }
+        });
+
     }
 
     @Override
@@ -267,8 +314,16 @@ public class SurfacePreviewer extends BaseGLSurfaceView implements IPreview  {
     @Override
     protected void onDetachedFromWindow() {
         if(mRender != null){
-            mRender.release();
+            postEvent(new Runnable() {
+                @Override
+                public void run() {
+                    mRender.release();
+                }
+            });
+
         }
         super.onDetachedFromWindow();
+
+
     }
 }

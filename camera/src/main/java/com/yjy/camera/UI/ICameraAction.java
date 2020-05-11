@@ -3,6 +3,7 @@ package com.yjy.camera.UI;
 import android.support.annotation.NonNull;
 
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
 
@@ -21,6 +22,17 @@ public interface ICameraAction {
      * @param callback
      */
     void takePhoto(final TakePhotoCallback callback);
+
+    /**
+     * 获取当前帧的保存的文件
+     */
+    void takePhoto(String name, TakePhotoFileCallback callback);
+
+    /**
+     * 保存目录
+     * @param name 设置保存目录
+     */
+    void setSavePhotoDir(String name);
 
     /**
      * 设置闪光灯

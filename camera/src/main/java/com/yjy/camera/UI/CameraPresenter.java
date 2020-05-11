@@ -1,17 +1,24 @@
 package com.yjy.camera.UI;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.R;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Utils.AspectRatio;
+import com.yjy.camera.Utils.CameraUtils;
+import com.yjy.camera.Utils.Utils;
 import com.yjy.camera.bitmap.BitmapPool;
 import com.yjy.camera.widget.YCameraView;
 
@@ -40,6 +47,12 @@ public class CameraPresenter implements ICameraPresenter{
     private ArrayList<Runnable> mRunnables = new ArrayList<>();
 
     private BitmapPool mPool;
+
+    //设置一个前置补光灯，实际上就是一个全局的白色图片，然后亮度提升到最大
+    private ImageView mPreFlashImg;
+
+    private static final int DELAY = 500;
+
 
 
     public void setCameraParams(CameraParam cameraParams) {
@@ -72,6 +85,14 @@ public class CameraPresenter implements ICameraPresenter{
         }
 
         mPool = mCameraParams.getBitmapPool();
+
+        mPreFlashImg = new ImageView(activity);
+        mPreFlashImg.setImageResource(R.color.white);
+
+        FrameLayout frameLayout = activity.findViewById(android.R.id.content);
+
+        frameLayout.addView(mPreFlashImg);
+        mPreFlashImg.setVisibility(View.GONE);
 
 
         for(Runnable runnable : mRunnables){
@@ -111,7 +132,9 @@ public class CameraPresenter implements ICameraPresenter{
 
     @Override
     public void release(IFBOFilter filter) {
-
+        if(mCameraView != null){
+            mCameraView.release(filter);
+        }
     }
 
     @Override
@@ -312,12 +335,90 @@ public class CameraPresenter implements ICameraPresenter{
             mRunnables.add(new Runnable() {
                 @Override
                 public void run() {
-                    mCameraView.takePhoto(callback);
+                    takePhotoWithPreFlash(callback);
                 }
             });
             return;
         }
-        mCameraView.takePhoto(callback);
+        takePhotoWithPreFlash(callback);
+    }
+
+    private void takePhotoWithPreFlash(final TakePhotoCallback callback){
+        int flash = getFlash();
+        if(flash == ICameraDevice.FLASH_FRONT){
+            if(mCameraView.getFacing() == ICameraDevice.FACING_FRONT){
+                mPreFlashImg.setVisibility(View.VISIBLE);
+                CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                        WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+            }
+        }
+        mCameraView.post(new Runnable() {
+            @Override
+            public void run() {
+                mCameraView.takePhoto(new TakePhotoCallback() {
+                    @Override
+                    public void takePhoto(Bitmap bitmap) {
+                        mPreFlashImg.setVisibility(View.GONE);
+                        CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+                        if(callback != null){
+                            callback.takePhoto(bitmap);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void takePhoto(final String name, final TakePhotoFileCallback callback) {
+        if(mCameraView == null){
+            mRunnables.add(new Runnable() {
+                @Override
+                public void run() {
+                    takePhotoWithPreFlash(name,callback);
+                }
+            });
+            return;
+        }
+        takePhotoWithPreFlash(name,callback);
+    }
+
+    private void takePhotoWithPreFlash(final String name,final TakePhotoFileCallback callback){
+        int flash = getFlash();
+        if(flash == ICameraDevice.FLASH_FRONT){
+            if(mCameraView.getFacing() == ICameraDevice.FACING_FRONT){
+                mPreFlashImg.setVisibility(View.VISIBLE);
+                CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                        WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+            }
+
+        }
+        mCameraView.post(new Runnable() {
+            @Override
+            public void run() {
+                mCameraView.takePhoto(name,new TakePhotoFileCallback(){
+
+                    @Override
+                    public void takePhoto(String path) {
+                        mPreFlashImg.setVisibility(View.GONE);
+                        CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+                        if(callback != null){
+                            callback.takePhoto(path);
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    @Override
+    public void setSavePhotoDir(String name) {
+        if(mCameraView != null){
+            mCameraParams.setSaveDir(name);
+        }
     }
 
     @Override

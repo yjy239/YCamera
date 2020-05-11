@@ -13,10 +13,13 @@ import android.view.View;
 
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.Render.CameraRender;
 import com.yjy.camera.Filter.IFBOFilter;
 import com.yjy.camera.Render.IMatrixRender;
+import com.yjy.camera.Utils.CameraUtils;
+import com.yjy.camera.Utils.Utils;
 import com.yjy.opengl.util.Size;
 import com.yjy.opengl.core.EglContext;
 import com.yjy.opengl.widget.GLTextureView;
@@ -122,19 +125,33 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
 
     @Override
     public void takePhoto(final TakePhotoCallback callback) {
-        final Bitmap bitmap = getBitmap();
-        postEvent(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mHandler.post(new Runnable() {
+                Bitmap bitmap = getBitmap();
+                if(callback != null){
+                    callback.takePhoto(bitmap);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void takePhoto(final String name, final TakePhotoFileCallback callback) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                final Bitmap bitmap = getBitmap();
+                Utils.execute(new Runnable() {
                     @Override
                     public void run() {
-                        if(callback != null){
-                            callback.takePhoto(bitmap);
+                        String path = CameraUtils.savePhoto(getContext(),bitmap,mParam,name);
+                        if(callback!=null){
+                            callback.takePhoto(path);
                         }
                     }
                 });
-
             }
         });
 

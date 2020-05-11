@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import com.yjy.camera.Camera.CameraOneDevice;
 import com.yjy.camera.Camera.ICameraDevice;
 import com.yjy.camera.Camera.TakePhotoCallback;
+import com.yjy.camera.Camera.TakePhotoFileCallback;
 import com.yjy.camera.Engine.CameraParam;
 import com.yjy.camera.R;
 import com.yjy.camera.Filter.IFBOFilter;
@@ -426,6 +427,21 @@ public class YCameraView extends FrameLayout
         mParams.setSoftwareZoom(isSoftWareZoom);
     }
 
+
+    public void setSaveDir(String name){
+        mParams.setSaveDir(name);
+    }
+
+    public void setAuthority(String authority){
+        mParams.setAuthority(authority);
+    }
+
+    public void setQuality(int quality){
+        mParams.setQuality(quality);
+    }
+
+
+
     @Override
     public void stopZoom() {
         if(mDevice != null){
@@ -449,15 +465,21 @@ public class YCameraView extends FrameLayout
 
     public void takePhoto(final TakePhotoCallback callback){
         if(mCameraSurfaceView != null){
-            mCameraSurfaceView.takePhoto(new TakePhotoCallback() {
-                @Override
-                public void takePhoto(Bitmap bitmap) {
-                    if(callback != null){
-                        callback.takePhoto(bitmap);
-                    }
-                }
-            });
+            mCameraSurfaceView.takePhoto(callback);
         }
+    }
+
+
+    @Override
+    public void takePhoto(String name, TakePhotoFileCallback callback) {
+        if(mCameraSurfaceView != null){
+            mCameraSurfaceView.takePhoto(name,callback);
+        }
+    }
+
+    @Override
+    public void setSavePhotoDir(String name) {
+
     }
 
 
