@@ -183,27 +183,47 @@ public final class TexturePreviewer extends GLTextureView implements IPreview {
 
     @Override
     public void addFilter(IFBOFilter filter) {
+        if(mRenderer ==null){
+            return;
+        }
         mRenderer.addFilter(filter);
     }
 
     @Override
     public void removeFilter(IFBOFilter filter) {
+        if(mRenderer ==null){
+            return;
+        }
         mRenderer.removeFilter(filter);
     }
 
     @Override
     public void setFilters(ArrayList<IFBOFilter> filters) {
+        if(mRenderer ==null){
+            return;
+        }
         mRenderer.setFilters(filters);
     }
 
     @Override
     public void setFilterSync(boolean isSync) {
+        if(mRenderer ==null){
+            return;
+        }
         mRenderer.setFilterSync(isSync);
     }
 
     @Override
     public void release() {
-        mRenderer.release();
+        postEvent(new Runnable() {
+            @Override
+            public void run() {
+                if(mRenderer!=null){
+                    mRenderer.release();
+                }
+            }
+        });
+
     }
 
     @Override
