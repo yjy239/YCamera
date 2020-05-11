@@ -344,17 +344,18 @@ public class CameraPresenter implements ICameraPresenter{
     }
 
     private void takePhotoWithPreFlash(final TakePhotoCallback callback){
-        int flash = getFlash();
-        if(flash == ICameraDevice.FLASH_FRONT){
-            if(mCameraView.getFacing() == ICameraDevice.FACING_FRONT){
-                mPreFlashImg.setVisibility(View.VISIBLE);
-                CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
-                        WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
-            }
-        }
         mCameraView.post(new Runnable() {
             @Override
             public void run() {
+                int flash = getFlash();
+                if(flash == ICameraDevice.FLASH_FRONT){
+                    if(mCameraView.getFacing() == ICameraDevice.FACING_FRONT){
+                        mPreFlashImg.setVisibility(View.VISIBLE);
+                        CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+                    }
+                }
+
                 mCameraView.takePhoto(new TakePhotoCallback() {
                     @Override
                     public void takePhoto(Bitmap bitmap) {
@@ -385,18 +386,20 @@ public class CameraPresenter implements ICameraPresenter{
     }
 
     private void takePhotoWithPreFlash(final String name,final TakePhotoFileCallback callback){
-        int flash = getFlash();
-        if(flash == ICameraDevice.FLASH_FRONT){
-            if(mCameraView.getFacing() == ICameraDevice.FACING_FRONT){
-                mPreFlashImg.setVisibility(View.VISIBLE);
-                CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
-                        WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
-            }
 
-        }
         mCameraView.post(new Runnable() {
             @Override
             public void run() {
+                int flash = getFlash();
+                if(flash == ICameraDevice.FLASH_FRONT){
+                    if(mCameraView.getFacing() == ICameraDevice.FACING_FRONT){
+                        mPreFlashImg.setVisibility(View.VISIBLE);
+                        CameraUtils.setWindowBrightness((Activity) mCameraView.getContext(),
+                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+                    }
+
+                }
+
                 mCameraView.takePhoto(name,new TakePhotoFileCallback(){
 
                     @Override
