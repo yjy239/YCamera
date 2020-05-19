@@ -39,6 +39,8 @@ public class CameraOneDevice extends BaseCameraDevice {
         FLASH_MODES.put(ICameraDevice.FLASH_TORCH, Camera.Parameters.FLASH_MODE_TORCH);
         FLASH_MODES.put(ICameraDevice.FLASH_AUTO, Camera.Parameters.FLASH_MODE_AUTO);
         FLASH_MODES.put(ICameraDevice.FLASH_RED_EYE, Camera.Parameters.FLASH_MODE_RED_EYE);
+        //特殊的映射
+        FLASH_MODES.put(ICameraDevice.FLASH_FRONT, Camera.Parameters.FLASH_MODE_OFF);
     }
 
     private static final int MAGIC_TEXTURE_ID = 0;
@@ -56,6 +58,8 @@ public class CameraOneDevice extends BaseCameraDevice {
     //支持平滑Zoom
     private boolean isZoomSmooth = false;
 
+    //判断是否是补光灯
+    private boolean isFrontFlash = false;
 
 
 
@@ -431,13 +435,12 @@ public class CameraOneDevice extends BaseCameraDevice {
         if(modes != null&&modes.contains(mode)){
             mCameraParams.setFlashMode(mode);
             flashMode = flash;
-
             return true;
         }
 
         String currentMode = FLASH_MODES.get(flashMode);
         if(modes == null||!modes.contains(currentMode)){
-            mCameraParams.setFlashMode(currentMode);
+            mCameraParams.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             flashMode = ICameraDevice.FLASH_OFF;
             return true;
         }

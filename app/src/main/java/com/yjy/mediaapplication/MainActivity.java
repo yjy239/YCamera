@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 front = !front;
                 mCamera.setFacing(front?ICameraDevice.FACING_FRONT:ICameraDevice.FACING_BACK);
+                mFlashIv.setImageResource(R.drawable.ic_close_flash);
             }
         });
 
