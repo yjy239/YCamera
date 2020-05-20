@@ -221,59 +221,66 @@ public class CameraRender extends BaseRender {
         }
         mReleaseLock.lock();
 
-        if(mDrawer == null){
-            mTextureProgram = new Texture2DProgram(mContext,Texture2DProgram.TEXTURE_2D);
-            mTextureProgram.create();
-            mDrawer = new FrameDrawer(mTextureProgram);
-        }
-
-
-        if(mTextureId== Utils.GL_NOT_TEXTURE){
-
-            mTextureId = mDrawer.createTextureObject();
-
-            //生成一个Surface
-            if(mSurfaceTexture == null){
-                mSurfaceTexture = new SurfaceTexture(mTextureId);
-            }else {
-                mSurfaceTexture.release();
-                mSurfaceTexture = new SurfaceTexture(mTextureId);
-            }
-
-            if(mCameraDevice != null){
-                mCameraDevice.onSurfacePrepare(mSurfaceTexture);
+        try {
+            if(mDrawer == null){
+                mTextureProgram = new Texture2DProgram(mContext,Texture2DProgram.TEXTURE_2D);
+                mTextureProgram.create();
+                mDrawer = new FrameDrawer(mTextureProgram);
             }
 
 
-            mSurfaceTexture.setOnFrameAvailableListener(mFrameAvailableListener);
+            if(mTextureId== Utils.GL_NOT_TEXTURE){
 
-            //FBO的创建
-            mOESFilter.onSurfaceCreated(mViewWidth,mViewHeight);
-            Utils.checkGlError("onSurfaceCreated");
+                mTextureId = mDrawer.createTextureObject();
 
-            if(mPrepareFilters.size()>0){
-                mReadyFilters.addAll(mPrepareFilters);
-
-                if(mReadyFilters.size()>0){
-                    mReadyFilters.get(mReadyFilters.size()-1).addDrawEnd(getShotRunnable);
+                //生成一个Surface
+                if(mSurfaceTexture == null){
+                    mSurfaceTexture = new SurfaceTexture(mTextureId);
+                }else {
+                    mSurfaceTexture.release();
+                    mSurfaceTexture = new SurfaceTexture(mTextureId);
                 }
 
-                mPrepareFilters.clear();
+                if(mCameraDevice != null){
+                    mCameraDevice.onSurfacePrepare(mSurfaceTexture);
+                }
+
+
+                mSurfaceTexture.setOnFrameAvailableListener(mFrameAvailableListener);
+
+                //FBO的创建
+                mOESFilter.onSurfaceCreated(mViewWidth,mViewHeight);
+                Utils.checkGlError("onSurfaceCreated");
+
+                if(mPrepareFilters.size()>0){
+                    mReadyFilters.addAll(mPrepareFilters);
+
+                    if(mReadyFilters.size()>0){
+                        mReadyFilters.get(mReadyFilters.size()-1).addDrawEnd(getShotRunnable);
+                    }
+
+                    mPrepareFilters.clear();
+                }
+
+
+                for(int i = 0; i< mReadyFilters.size(); i++){
+                    mReadyFilters.get(i).onSurfaceCreated(mViewWidth,mViewHeight);
+                }
+
             }
 
 
-            for(int i = 0; i< mReadyFilters.size(); i++){
-                mReadyFilters.get(i).onSurfaceCreated(mViewWidth,mViewHeight);
-            }
+            isInit = true;
 
+            Utils.checkGlError("onSurfaceCreated");
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            mReleaseLock.unlock();
         }
 
 
-        isInit = true;
 
-        Utils.checkGlError("onSurfaceCreated");
-
-        mReleaseLock.unlock();
 
     }
 
@@ -285,24 +292,31 @@ public class CameraRender extends BaseRender {
         }
         //区域发生变换
         mReleaseLock.lock();
+        try {
+            //重新设定Surface的渲染区域
+            GLES20.glViewport(0, 0, width, height);
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+            GLES20.glClearColor(0f, 0f, 0f, 0f);
+            Utils.checkGlError("onSurfaceChanged");
 
-        //重新设定Surface的渲染区域
-        GLES20.glViewport(0, 0, width, height);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glClearColor(0f, 0f, 0f, 0f);
-        Utils.checkGlError("onSurfaceChanged");
+            mCameraDevice.changeSize(width,height);
+            mOESFilter.onSurfaceChanged(width,height);
 
-        mCameraDevice.changeSize(width,height);
-        mOESFilter.onSurfaceChanged(width,height);
+            for(int i = 0; i< mReadyFilters.size(); i++){
+                mReadyFilters.get(i).onSurfaceChanged(width,height);
+            }
 
-        for(int i = 0; i< mReadyFilters.size(); i++){
-            mReadyFilters.get(i).onSurfaceChanged(width,height);
+            Utils.checkGlError("after onSurfaceCreated");
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            mReleaseLock.unlock();
         }
 
-        Utils.checkGlError("after onSurfaceCreated");
 
 
-        mReleaseLock.unlock();
+
+
 
 
     }
@@ -318,34 +332,42 @@ public class CameraRender extends BaseRender {
 
         mReleaseLock.lock();
 
-        //说明Surface在运行过程中，有新的滤镜添加
-        if(mPrepareFilters.size()>0){
-            for(IFBOFilter filter : mPrepareFilters){
-                if(filter!=null&&!filter.isInit()){
-                    filter.onSurfaceCreated(mViewWidth,mViewHeight);
-                    filter.onSurfaceChanged(mViewWidth,mViewHeight);
+        try {
+            //说明Surface在运行过程中，有新的滤镜添加
+            if(mPrepareFilters.size()>0){
+                for(IFBOFilter filter : mPrepareFilters){
+                    if(filter!=null&&!filter.isInit()){
+                        filter.onSurfaceCreated(mViewWidth,mViewHeight);
+                        filter.onSurfaceChanged(mViewWidth,mViewHeight);
+                    }
                 }
-            }
-            //销毁上一次最后一个filter的绘制末尾监听
-            if(mReadyFilters.size() > 0){
-                mReadyFilters.get(mReadyFilters.size()-1).removeDrawEnd(getShotRunnable);
+                //销毁上一次最后一个filter的绘制末尾监听
+                if(mReadyFilters.size() > 0){
+                    mReadyFilters.get(mReadyFilters.size()-1).removeDrawEnd(getShotRunnable);
+                }
+
+                mReadyFilters.addAll(mPrepareFilters);
+
+                //添加本次最后filter的绘制监听
+                if(mReadyFilters.size()>0){
+                    mReadyFilters.get(mReadyFilters.size()-1).addDrawEnd(getShotRunnable);
+                }
+                mPrepareFilters.clear();
             }
 
-            mReadyFilters.addAll(mPrepareFilters);
 
-            //添加本次最后filter的绘制监听
-            if(mReadyFilters.size()>0){
-                mReadyFilters.get(mReadyFilters.size()-1).addDrawEnd(getShotRunnable);
-            }
-            mPrepareFilters.clear();
+
+
+            drawScreenThroughFBO();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            mReleaseLock.unlock();
         }
 
 
 
 
-       drawScreenThroughFBO();
-
-        mReleaseLock.unlock();
     }
 
     /**
